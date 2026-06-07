@@ -1,39 +1,1333 @@
-<!-- SPLASH VIDEO OVERLAY -->
-<div id="splashOverlay" style="
-  position: fixed; inset: 0; z-index: 9999;
-  background: black;
-  display: flex; align-items: center; justify-content: center;
-  opacity: 1; transition: opacity 1.5s ease;
-">
-  <video id="splashVideo" autoplay muted playsinline
-    style="width:100%; height:100%; object-fit:cover; opacity:0.55;"
-    src="URL_DEL_TUO_VIDEO.mp4">
-  </video>
-  <!-- Logo Charlotte sopra il video -->
-  <div style="
-    position: absolute;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-  ">
-    <img src="charlotte_icon.png" style="width:100px; filter: drop-shadow(0 0 20px #BF00FF);">
-    <div style="
-      font-family: serif; font-size: 3rem; color: white;
-      letter-spacing: 0.4em;
-      text-shadow: 0 0 30px #BF00FF, 0 0 60px #7B00A8;
-      margin-top: 16px;
-    ">CHARLOTTE</div>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Charlotte — City Parking</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
+<meta name="theme-color" content="#0a0a0f">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;800&display=swap');
+
+  :root {
+    --bg: #0a0a0f; --bg2: #111118; --panel: #16161f; --border: #2a2a3a;
+    --accent: #7c3aed; --accent2: #a855f7; --accent3: #c084fc;
+    --green: #10b981; --red: #ef4444; --amber: #f59e0b;
+    --text: #e8e8f0; --muted: #6b6b85; --white: #ffffff;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { background:var(--bg)!important; color:var(--text); font-family:'Exo 2',sans-serif; min-height:100vh; overflow-x:hidden; }
+  select option { background:var(--bg2); color:var(--text); }
+
+  .header { background:var(--panel); border-bottom:1px solid var(--border); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .logo { display:flex; align-items:center; gap:10px; }
+  .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; color:white; box-shadow:0 0 16px rgba(124,58,237,0.5); }
+  .logo-text { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:20px; letter-spacing:1px; background:linear-gradient(90deg,var(--accent3),var(--white)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .garage-badge { background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:4px 10px; font-size:11px; color:var(--muted); font-family:'Share Tech Mono',monospace; }
+  .garage-badge select { background:none; border:none; color:var(--accent3); font-family:'Share Tech Mono',monospace; font-size:11px; outline:none; cursor:pointer; }
+
+  .main { padding:16px; max-width:500px; margin:0 auto; }
+  .screen { display:none; }
+  .screen.active { display:block; }
+
+  .time-display { text-align:center; padding:10px 0 8px; }
+  .time-display .time { font-family:'Share Tech Mono',monospace; font-size:52px; color:var(--white); letter-spacing:4px; text-shadow:0 0 30px rgba(124,58,237,0.4); }
+  .time-display .date { font-size:18px; color:var(--muted); margin-top:4px; font-family:'Share Tech Mono',monospace; letter-spacing:2px; }
+
+  .action-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+  .action-btn { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:38px 16px; text-align:center; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; user-select:none; }
+  .action-btn::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius:16px 16px 0 0; }
+  .action-btn.ingresso::before { background:var(--green); }
+  .action-btn.uscita::before { background:var(--accent2); }
+  .action-btn.lista::before { background:var(--amber); }
+  .action-btn.ricerca::before { background:var(--red); }
+  .action-btn:active { transform:scale(0.96); opacity:0.85; }
+  .action-btn .btn-icon { font-size:72px; margin-bottom:12px; display:block; }
+  .action-btn .btn-label { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; letter-spacing:1px; text-transform:uppercase; }
+  .action-btn.ingresso .btn-label { color:var(--green); }
+  .action-btn.uscita .btn-label { color:var(--accent2); }
+  .action-btn.lista .btn-label { color:var(--amber); }
+  .action-btn.ricerca .btn-label { color:var(--red); }
+  .action-btn .btn-sub { font-size:22px; color:var(--muted); margin-top:10px; }
+
+  .stats-bar { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+  .stat { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:8px; text-align:center; }
+  .stat .val { font-family:'Share Tech Mono',monospace; font-size:28px; font-weight:bold; color:var(--accent3); }
+  .stat .lbl { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:2px; }
+
+  .screen-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+  .back-btn { width:36px; height:36px; background:var(--panel); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; flex-shrink:0; }
+  .screen-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:22px; letter-spacing:1px; text-transform:uppercase; }
+
+  .targa-display { background:var(--panel); border:2px solid var(--border); border-radius:16px; padding:20px; text-align:center; margin-bottom:16px; position:relative; min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .targa-display.has-targa { border-color:var(--green); box-shadow:0 0 20px rgba(16,185,129,0.15); }
+  .targa-value { font-family:'Share Tech Mono',monospace; font-size:42px; font-weight:bold; letter-spacing:6px; color:var(--white); text-transform:uppercase; }
+  .targa-placeholder { font-size:14px; color:var(--muted); }
+
+  /* Pulsanti camera — due bottoni affiancati */
+  .camera-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+  .camera-btn { background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; border-radius:14px; padding:16px 10px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:1px; text-transform:uppercase; color:white; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 20px rgba(124,58,237,0.4); transition:all 0.2s; }
+  .camera-btn.gallery { background:linear-gradient(135deg,#0f766e,#0d9488); box-shadow:0 4px 20px rgba(13,148,136,0.4); }
+  .camera-btn:active { transform:scale(0.97); }
+  .camera-btn .btn-emoji { font-size:26px; }
+  .camera-btn .btn-txt { font-size:13px; letter-spacing:1px; }
+
+  .manual-section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:16px; }
+  .manual-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .manual-input-row { display:flex; gap:8px; }
+  .manual-input { flex:1; background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:12px; font-family:'Share Tech Mono',monospace; font-size:20px; letter-spacing:3px; color:var(--white); text-transform:uppercase; outline:none; text-align:center; }
+  .manual-input:focus { border-color:var(--accent); }
+  .manual-confirm-btn { background:var(--bg2); border:1px solid var(--accent); border-radius:10px; padding:12px 16px; color:var(--accent3); font-size:20px; cursor:pointer; }
+
+  .tipo-section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:16px; }
+  .tipo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:10px; }
+  .tipo-btn { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:10px 6px; text-align:center; cursor:pointer; font-size:11px; color:var(--muted); transition:all 0.2s; }
+  .tipo-btn.selected { background:rgba(124,58,237,0.2); border-color:var(--accent); color:var(--accent3); }
+  .tipo-btn .tipo-icon { font-size:20px; display:block; margin-bottom:4px; }
+
+  .conferma-btn { width:100%; background:var(--green); border:none; border-radius:14px; padding:18px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:20px; letter-spacing:2px; text-transform:uppercase; color:white; cursor:pointer; box-shadow:0 4px 20px rgba(16,185,129,0.3); transition:all 0.2s; opacity:0.4; pointer-events:none; }
+  .conferma-btn.enabled { opacity:1; pointer-events:all; }
+  .conferma-btn:active { transform:scale(0.97); }
+
+  .sosta-card { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:10px; display:flex; align-items:center; gap:14px; }
+  .sosta-card.attiva { border-left:3px solid var(--green); }
+  .sosta-card.chiusa { border-left:3px solid var(--muted); opacity:0.7; }
+  .sosta-targa { font-family:'Share Tech Mono',monospace; font-size:18px; font-weight:bold; color:var(--white); letter-spacing:2px; }
+  .sosta-info { flex:1; }
+  .sosta-tipo { font-size:11px; color:var(--muted); margin-top:2px; }
+  .sosta-time { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--accent3); text-align:right; }
+  .sosta-duration { font-size:11px; color:var(--muted); text-align:right; margin-top:2px; }
+  .uscita-quick-btn { background:var(--accent); border:none; border-radius:8px; padding:8px 12px; color:white; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
+
+  /* Overlay conferma targa OCR */
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:300; align-items:center; justify-content:center; flex-direction:column; gap:14px; padding:24px; }
+  .overlay.show { display:flex; }
+  .overlay-icon { font-size:72px; animation:pop 0.4s ease; }
+  .overlay-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; letter-spacing:2px; color:var(--white); text-align:center; }
+  .overlay-sub { font-size:14px; color:var(--muted); text-align:center; }
+  .overlay-targa { font-family:'Share Tech Mono',monospace; font-size:36px; letter-spacing:4px; color:var(--green); background:rgba(16,185,129,0.1); padding:12px 24px; border-radius:12px; border:1px solid var(--green); }
+  @keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+
+  /* Overlay conferma OCR (mostra targa rilevata + input correzione) */
+  .ocr-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:400; align-items:center; justify-content:center; flex-direction:column; gap:16px; padding:24px; }
+  .ocr-overlay.show { display:flex; }
+  .ocr-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:22px; letter-spacing:2px; color:var(--white); text-align:center; }
+  .ocr-conf { font-size:13px; color:var(--muted); }
+  .ocr-input { font-family:'Share Tech Mono',monospace; font-size:38px; letter-spacing:6px; color:var(--white); background:var(--bg2); border:2px solid var(--accent); border-radius:14px; padding:14px 20px; text-align:center; text-transform:uppercase; outline:none; width:100%; max-width:340px; }
+  .ocr-btns { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; }
+  .ocr-btn { padding:14px; border:none; border-radius:12px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:18px; letter-spacing:1px; cursor:pointer; }
+  .ocr-btn.confirm { background:var(--green); color:white; }
+  .ocr-btn.cancel { background:var(--panel); border:1px solid var(--border); color:var(--muted); }
+
+  /* input file nascosto */
+  #camera-input, #gallery-input { display:none; }
+
+  .empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
+  .empty-state .empty-icon { font-size:52px; margin-bottom:12px; }
+  .empty-state .empty-text { font-size:14px; }
+
+  .search-input { width:100%; background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px 16px; font-family:'Share Tech Mono',monospace; font-size:18px; letter-spacing:2px; color:var(--white); text-transform:uppercase; outline:none; margin-bottom:16px; }
+  .search-input:focus { border-color:var(--accent); }
+  .section-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-bottom:10px; padding-left:2px; }
+
+  @media (min-width:600px) {
+    .time-display .time { font-size:86px; letter-spacing:8px; }
+    .time-display .date { font-size:28px; letter-spacing:4px; }
+    .stat .val { font-size:42px; } .stat .lbl { font-size:16px; } .stat { padding:14px; }
+    .action-btn .btn-icon { font-size:96px; margin-bottom:16px; }
+    .action-btn .btn-label { font-size:42px; } .action-btn .btn-sub { font-size:26px; }
+    .action-btn { padding:40px 16px; border-radius:22px; }
+    .logo-icon { width:52px; height:52px; font-size:26px; } .logo-text { font-size:30px; }
+    .garage-badge select { font-size:16px; } .header { padding:16px 24px; }
+    .main { padding:20px 24px; max-width:700px; }
+    .action-grid { gap:16px; } .stats-bar { gap:12px; margin-bottom:16px; }
+    .screen-title { font-size:32px; } .back-btn { width:52px; height:52px; font-size:26px; border-radius:14px; }
+    .targa-value { font-size:64px; letter-spacing:10px; }
+    .camera-btn { font-size:18px; padding:20px 14px; border-radius:18px; }
+    .camera-btn .btn-emoji { font-size:34px; }
+    .camera-btn .btn-txt { font-size:16px; }
+    .manual-input { font-size:32px; letter-spacing:5px; padding:16px; }
+    .manual-confirm-btn { font-size:28px; padding:16px 20px; }
+    .manual-label { font-size:16px; }
+    .tipo-btn { font-size:16px; padding:16px 8px; } .tipo-btn .tipo-icon { font-size:32px; }
+    .conferma-btn { font-size:28px; padding:24px; border-radius:18px; }
+    .section-label { font-size:16px; } .search-input { font-size:28px; padding:18px 20px; }
+    .sosta-targa { font-size:28px; } .sosta-tipo { font-size:16px; }
+    .sosta-time { font-size:18px; } .uscita-quick-btn { font-size:18px; padding:12px 18px; }
+    .overlay-targa { font-size:52px; } .overlay-title { font-size:38px; } .overlay-sub { font-size:20px; }
+    .ocr-input { font-size:52px; } .ocr-title { font-size:28px; }
+  }
+
+  /* PIN SCREEN */
+  .pin-screen { position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:32px; }
+  .pin-logo { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:10px; }
+  .pin-logo-icon { width:72px; height:72px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:36px; color:white; box-shadow:0 0 30px rgba(124,58,237,0.5); }
+  .pin-logo-text { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; letter-spacing:2px; background:linear-gradient(90deg,var(--accent3),var(--white)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .pin-subtitle { font-size:13px; color:var(--muted); letter-spacing:1px; }
+  .pin-dots { display:flex; gap:14px; margin:8px 0; }
+  .pin-dot { width:18px; height:18px; border-radius:50%; border:2px solid var(--border); background:transparent; transition:all 0.2s; }
+  .pin-dot.filled { background:var(--accent2); border-color:var(--accent2); box-shadow:0 0 10px rgba(168,85,247,0.5); }
+  .pin-dot.error { background:var(--red); border-color:var(--red); }
+  .pin-error { font-size:13px; color:var(--red); min-height:18px; }
+  .pin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; width:100%; max-width:280px; }
+  .pin-btn { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:20px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:26px; color:var(--white); cursor:pointer; text-align:center; transition:all 0.15s; user-select:none; }
+  .pin-btn:active { transform:scale(0.92); background:rgba(124,58,237,0.2); border-color:var(--accent); }
+  .pin-btn.zero { grid-column:2; }
+  .pin-btn.canc { background:transparent; border-color:transparent; color:var(--muted); font-size:20px; }
+  @media (min-width:600px) {
+    .pin-logo-icon { width:96px; height:96px; font-size:48px; }
+    .pin-logo-text { font-size:38px; }
+    .pin-dot { width:24px; height:24px; }
+    .pin-btn { font-size:36px; padding:26px; border-radius:20px; }
+    .pin-grid { max-width:360px; gap:16px; }
+  }
+
+
+  .conv-section { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:16px; }
+  .conv-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+  .conv-btn { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:10px 6px; text-align:center; cursor:pointer; font-size:11px; color:var(--muted); transition:all 0.2s; }
+  .conv-btn.selected { background:rgba(16,185,129,0.15); border-color:var(--green); color:var(--green); }
+  .conv-btn .conv-icon { font-size:18px; display:block; margin-bottom:3px; }
+  .cat-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .cat-btn { background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:8px; text-align:center; cursor:pointer; font-size:13px; color:var(--muted); transition:all 0.2s; font-family:'Share Tech Mono',monospace; }
+  .cat-btn.selected { background:rgba(245,158,11,0.15); border-color:var(--amber); color:var(--amber); }
+  @media (min-width:600px) {
+    .conv-btn { font-size:16px; padding:14px 8px; } .conv-btn .conv-icon { font-size:28px; }
+    .cat-btn { font-size:18px; padding:12px; }
+  }
+
+
+  .conv-item { padding:12px 16px; cursor:pointer; font-size:14px; color:var(--text); border-bottom:1px solid var(--border); transition:background 0.15s; }
+  .conv-item:last-child { border-bottom:none; }
+  .conv-item:hover, .conv-item:active { background:rgba(124,58,237,0.15); color:var(--accent3); }
+  .conv-item .conv-item-sub { font-size:11px; color:var(--muted); margin-top:2px; font-family:'Share Tech Mono',monospace; }
+  @media (min-width:600px) { .conv-item { font-size:18px; padding:14px 18px; } .conv-item .conv-item-sub { font-size:14px; } }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">C</div>
+    <div class="logo-text">CHARLOTTE</div>
+  </div>
+  <div class="garage-badge">
+    <select id="garage-select" onchange="cambiaGarage(this.value)">
+      <option value="fiesolana">📍 FIESOLANA</option>
+      <option value="venezia">📍 VENEZIA</option>
+      <option value="borgopinti">📍 BORGOPINTI</option>
+      <option value="cimabue">📍 CIMABUE</option>
+    </select>
+  </div>
+</div>
+
+<!-- Input nascosti -->
+<input type="file" id="camera-input" accept="image/*" capture="environment">
+<input type="file" id="gallery-input" accept="image/*">
+
+<!-- ═══ HOME ═══ -->
+<div class="main">
+<div id="screen-home" class="screen active">
+  <div class="time-display">
+    <div class="time" id="clock">--:--</div>
+    <div class="date" id="datex">-- / -- / ----</div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><div class="val" id="stat-attive">0</div><div class="lbl">Attive</div></div>
+    <div class="stat"><div class="val" id="stat-oggi">0</div><div class="lbl">Oggi</div></div>
+    <div class="stat"><div class="val" id="stat-tot">0</div><div class="lbl">Totali</div></div>
+  </div>
+  <div class="action-grid">
+    <div class="action-btn ingresso" onclick="showScreen('ingresso')">
+      <span class="btn-icon">🚗</span><div class="btn-label">Ingresso</div><div class="btn-sub">Nuova sosta</div>
+    </div>
+    <div class="action-btn uscita" onclick="showScreen('uscita')">
+      <span class="btn-icon">🏁</span><div class="btn-label">Uscita</div><div class="btn-sub">Chiudi sosta</div>
+    </div>
+    <div class="action-btn lista" onclick="showScreen('lista')">
+      <span class="btn-icon">📋</span><div class="btn-label">Lista</div><div class="btn-sub">Soste attive</div>
+    </div>
+    <div class="action-btn ricerca" onclick="showScreen('ricerca')">
+      <span class="btn-icon">🔍</span><div class="btn-label">Cerca</div><div class="btn-sub">Per targa</div>
+    </div>
+    <div class="action-btn" onclick="showScreen('report')" style="grid-column:1/-1;" >
+      <span class="btn-icon" style="font-size:48px;">📊</span><div class="btn-label" style="color:var(--accent3);">Report Storico</div><div class="btn-sub">Tutte le soste</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INGRESSO ═══ -->
+<div id="screen-ingresso" class="screen">
+  <div class="screen-header">
+    <div class="back-btn" onclick="showScreen('home')">←</div>
+    <div class="screen-title" style="color:var(--green)">🚗 Ingresso</div>
+  </div>
+  <div class="targa-display" id="targa-display-in">
+    <div class="targa-placeholder" id="targa-ph-in">Scansiona o inserisci targa</div>
+    <div class="targa-value" id="targa-val-in" style="display:none"></div>
+  </div>
+
+  <div class="camera-btns">
+    <button class="camera-btn" onclick="apriCamera('ingresso')">
+      <span class="btn-emoji">📷</span>
+      <span class="btn-txt">Scatta foto</span>
+    </button>
+    <button class="camera-btn gallery" onclick="apriGalleria('ingresso')">
+      <span class="btn-emoji">🖼️</span>
+      <span class="btn-txt">Scegli foto</span>
+    </button>
+  </div>
+
+  <div class="manual-section">
+    <div class="manual-label">Inserimento manuale</div>
+    <div class="manual-input-row">
+      <input class="manual-input" id="manual-in" placeholder="AB123CD" maxlength="8"
+             oninput="this.value=this.value.toUpperCase()" onkeyup="manualInput('ingresso')">
+      <button class="manual-confirm-btn" onclick="confermaTargaManuale('ingresso')">✓</button>
+    </div>
+  </div>
+
+  <div class="tipo-section">
+    <div class="manual-label">Dimensione veicolo — Auto standard</div>
+    <div class="tipo-grid" id="tipo-grid">
+      <div class="tipo-btn" onclick="selezionaTipo(this,'PICCOLA')"><span class="tipo-icon">🚗</span>Piccola</div>
+      <div class="tipo-btn" onclick="selezionaTipo(this,'MEDIA-GRANDE')"><span class="tipo-icon">🚙</span>Media/Grande</div>
+      <div class="tipo-btn" onclick="selezionaTipo(this,'LUXURY-VAN')"><span class="tipo-icon">🚐</span>Luxury/Van</div>
+    </div>
+  </div>
+
+
+  <div class="conv-section" id="conv-section">
+    <div class="manual-label">Convenzione hotel</div>
+    <div style="margin-top:8px;position:relative;">
+      <input id="conv-search" type="text" placeholder="🔍 Cerca struttura o scrivi Nessuna..." 
+        autocomplete="off"
+        oninput="filtraConvenzioni(this.value)"
+        onfocus="mostraDropdownConv()"
+        style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;outline:none;">
+      <div id="conv-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--panel);border:1px solid var(--accent);border-radius:10px;max-height:220px;overflow-y:auto;z-index:99;margin-top:4px;box-shadow:0 8px 24px rgba(0,0,0,0.5);"></div>
+    </div>
+    <div id="conv-selected-badge" style="display:none;margin-top:8px;background:rgba(124,58,237,0.15);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--accent3);font-family:'Share Tech Mono',monospace;"></div>
+    <div id="conv-info" style="margin-top:6px;font-size:12px;color:var(--green);display:none;font-family:'Share Tech Mono',monospace;"></div>
+    <div id="cat-section" style="display:none; margin-top:10px;">
+      <div class="manual-label" style="margin-bottom:6px;">Categoria veicolo</div>
+      <div class="cat-row">
+        <div class="cat-btn" onclick="selezionaCat(this,'CAT-A')">
+          <div style="font-size:15px;font-weight:bold;">Cat. A</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;">Piccole / Medie</div>
+        </div>
+        <div class="cat-btn" onclick="selezionaCat(this,'CAT-B')">
+          <div style="font-size:15px;font-weight:bold;">Cat. B</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;">Grandi / Van / Luxury</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="conferma-btn" id="btn-conferma-in" onclick="confermaIngresso()">✓ Conferma Ingresso</button>
+</div>
+
+<!-- ═══ USCITA ═══ -->
+<div id="screen-uscita" class="screen">
+  <div class="screen-header">
+    <div class="back-btn" onclick="showScreen('home')">←</div>
+    <div class="screen-title" style="color:var(--accent2)">🏁 Uscita</div>
+  </div>
+  <div class="targa-display" id="targa-display-out">
+    <div class="targa-placeholder" id="targa-ph-out">Scansiona o inserisci targa</div>
+    <div class="targa-value" id="targa-val-out" style="display:none"></div>
+  </div>
+
+  <div class="camera-btns">
+    <button class="camera-btn" onclick="apriCamera('uscita')">
+      <span class="btn-emoji">📷</span>
+      <span class="btn-txt">Scatta foto</span>
+    </button>
+    <button class="camera-btn gallery" onclick="apriGalleria('uscita')">
+      <span class="btn-emoji">🖼️</span>
+      <span class="btn-txt">Scegli foto</span>
+    </button>
+  </div>
+
+  <div class="manual-section">
+    <div class="manual-label">Inserimento manuale</div>
+    <div class="manual-input-row">
+      <input class="manual-input" id="manual-out" placeholder="AB123CD" maxlength="8"
+             oninput="this.value=this.value.toUpperCase()" onkeyup="manualInput('uscita')">
+      <button class="manual-confirm-btn" onclick="confermaTargaManuale('uscita')">✓</button>
+    </div>
+  </div>
+
+  <div id="sosta-trovata" style="display:none">
+    <div class="tipo-section" style="border-color:var(--accent);margin-bottom:16px;">
+      <div class="manual-label">Sosta trovata</div>
+      <div style="margin-top:8px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--muted);">Ingresso: <span id="out-ingresso" style="color:var(--accent3)"></span></div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--muted);margin-top:4px;">Tipo: <span id="out-tipo" style="color:var(--accent3)"></span></div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--muted);margin-top:4px;">Durata: <span id="out-durata" style="color:var(--green);font-weight:bold;"></span></div>
+      </div>
+      <div id="out-prezzo" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
+    </div>
+  </div>
+  <div id="sosta-non-trovata" style="display:none;margin-bottom:16px;">
+    <div class="tipo-section" style="border-color:var(--red);">
+      <div style="color:var(--red);font-size:13px;">⚠️ Nessuna sosta attiva trovata per questa targa</div>
+    </div>
+  </div>
+
+  <button class="conferma-btn" id="btn-conferma-out" onclick="confermaUscita()" style="background:var(--accent2);">✓ Conferma Uscita</button>
+</div>
+
+<!-- ═══ LISTA ═══ -->
+<div id="screen-lista" class="screen">
+  <div class="screen-header">
+    <div class="back-btn" onclick="showScreen('home')">←</div>
+    <div class="screen-title" style="color:var(--amber)">📋 Soste Attive</div>
+  </div>
+  <div id="lista-soste"></div>
+</div>
+
+<!-- ═══ RICERCA ═══ -->
+<div id="screen-ricerca" class="screen">
+  <div class="screen-header">
+    <div class="back-btn" onclick="showScreen('home')">←</div>
+    <div class="screen-title" style="color:var(--red)">🔍 Cerca Targa</div>
+  </div>
+  <input class="search-input" id="search-input" placeholder="AB123CD" maxlength="8"
+         oninput="this.value=this.value.toUpperCase();cercaTarga(this.value)">
+  <div id="search-results"></div>
+</div>
+<!-- ═══ REPORT SCREEN ═══ -->
+<div id="screen-report" class="screen">
+  <div class="screen-header">
+    <div class="back-btn" onclick="showScreen('home')">←</div>
+    <div class="screen-title" style="color:var(--accent3)">📊 Report Storico</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+    <select id="filter-conv" onchange="aggiornaReport()" style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:13px;outline:none;">
+      <option value="">Tutte le convenzioni</option>
+      <option value="NESSUNA">Nessuna</option>
+      <option value="HOTEL MEDICI">Hotel Medici</option>
+      <option value="HOTEL BODONI">Hotel Bodoni</option>
+      <option value="HOTEL JAMES">Hotel James</option>
+      <option value="CASA MAGATA">Casa Magata</option>
+      <option value="IMMOBILI LUXURY">Immobili Luxury</option>
+      <option value="MEDUSA">Medusa</option>
+      <option value="PIETRAPIANA BOUTIQUE">Pietrapiana Boutique</option>
+      <option value="MEGGY HOUSE">Meggy House</option>
+      <option value="BALOCCHINI">Balocchini</option>
+      <option value="PALAZZO GRAZIANI">Palazzo Graziani</option>
+      <option value="FIRENZE SUITES">Firenze Suites</option>
+      <option value="OBLATE">Oblate</option>
+      <option value="CASA ROVAI">Casa Rovai</option>
+      <option value="CASA MORFEO">Casa Morfeo</option>
+      <option value="MAMO FLORENCE">Mamo Florence</option>
+      <option value="EDEN">Eden</option>
+      <option value="FLORENCE ROOMS">Florence Rooms</option>
+      <option value="ANGELICA HOUSE">Angelica House</option>
+      <option value="KURSAAL">Kursaal</option>
+      <option value="CASA STELLA">Casa Stella</option>
+      <option value="PALAZZO CIOMPI">Palazzo Ciompi</option>
+      <option value="LUXURY FLORENCE">Luxury Florence</option>
+      <option value="PEPI MODERN">Pepi Modern</option>
+      <option value="DIMORA VECCHIA FIRENZE">Dimora Vecchia Firenze</option>
+      <option value="CASA VIGNALE">Casa Vignale</option>
+      <option value="BLU NOTTE">Blu Notte</option>
+      <option value="ANTICA DIMORA">Antica Dimora</option>
+      <option value="LOCANDA CIOMPI">Locanda Ciompi</option>
+      <option value="BAVARIA">Bavaria</option>
+      <option value="CANTO DEGLI ARANCI">Canto degli Aranci</option>
+    </select>
+    <select id="filter-stato" onchange="aggiornaReport()" style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:13px;outline:none;">
+      <option value="">Tutte le soste</option>
+      <option value="attiva">Soste in corso</option>
+      <option value="chiusa">Soste terminate</option>
+    </select>
+  </div>
+  <div id="report-loading" style="text-align:center;color:var(--muted);padding:20px;display:none;">⏳ Caricamento...</div>
+  <div id="report-list"></div>
+</div>
+
+</div>
+
+<!-- ═══ OVERLAY SUCCESSO ═══ -->
+<div class="overlay" id="overlay" onclick="chiudiOverlay()">
+  <div class="overlay-icon" id="overlay-icon">✅</div>
+  <div class="overlay-targa" id="overlay-targa"></div>
+  <div class="overlay-title" id="overlay-title"></div>
+  <div class="overlay-sub" id="overlay-sub">Tocca per continuare</div>
+</div>
+
+<!-- ═══ OVERLAY CONFERMA OCR ═══ -->
+<div class="ocr-overlay" id="ocr-overlay">
+  <div class="ocr-title">🔍 Targa rilevata</div>
+  <div class="ocr-conf" id="ocr-conf">Conferma o correggi</div>
+  <input class="ocr-input" id="ocr-input" maxlength="8" oninput="this.value=this.value.toUpperCase()">
+  <div class="ocr-btns">
+    <button class="ocr-btn cancel" onclick="annullaOCR()">✗ Annulla</button>
+    <button class="ocr-btn confirm" onclick="confermaOCR()">✓ Conferma</button>
   </div>
 </div>
 
 <script>
-const video = document.getElementById('splashVideo');
-const overlay = document.getElementById('splashOverlay');
+// ─── STATO ───
+let garageAttuale = 'fiesolana';
+let targaCorrente = '';
+let tipoVeicoloSelezionato = '';
+let targaUscita = '';
+let cameraMode = '';
+let contatore = parseInt(localStorage.getItem('charlotte_counter') || '1');
 
-video.addEventListener('ended', fadeOut);
-setTimeout(fadeOut, 4000); // fallback
+function getSoste() { try { return JSON.parse(localStorage.getItem('charlotte_soste') || '[]'); } catch { return []; } }
+function saveSoste(s) { localStorage.setItem('charlotte_soste', JSON.stringify(s)); }
 
-function fadeOut() {
-  overlay.style.opacity = '0';
-  setTimeout(() => overlay.remove(), 1500);
+// ─── OROLOGIO ───
+function aggiornaOrologio() {
+  const n = new Date();
+  document.getElementById('clock').textContent = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('datex').textContent = String(n.getDate()).padStart(2,'0')+' / '+String(n.getMonth()+1).padStart(2,'0')+' / '+n.getFullYear();
 }
+setInterval(aggiornaOrologio, 1000); aggiornaOrologio();
+
+// ─── STATS ───
+function aggiornaStats() {
+  try {
+    const soste = getSoste().filter(s => s.garage === garageAttuale);
+    const attive = document.getElementById('stat-attive');
+    const oggi = document.getElementById('stat-oggi');
+    const tot = document.getElementById('stat-tot');
+    if (attive) attive.textContent = soste.filter(s => !s.uscita).length;
+    if (oggi) oggi.textContent = soste.filter(s => s.ingresso && s.ingresso.startsWith(formatDate(new Date()))).length;
+    if (tot) tot.textContent = soste.length;
+  } catch(e) { console.error('aggiornaStats:', e); }
+}
+
+// ─── NAVIGAZIONE ───
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if (name === 'home') { resetIngresso(); resetUscita(); aggiornaStats(); }
+  if (name === 'lista') aggiornaLista();
+  if (name === 'report') aggiornaReport();
+  if (name === 'ricerca') { document.getElementById('search-input').value = ''; document.getElementById('search-results').innerHTML = ''; }
+}
+function cambiaGarage(val) { garageAttuale = val; aggiornaStats(); }
+
+// ─── INPUT FILE ───
+document.getElementById('camera-input').addEventListener('change', function(e) {
+  const f = e.target.files[0]; if (!f) return;
+  leggiImmagine(f, cameraMode); this.value = '';
+});
+document.getElementById('gallery-input').addEventListener('change', function(e) {
+  const f = e.target.files[0]; if (!f) return;
+  leggiImmagine(f, cameraMode); this.value = '';
+});
+
+function apriCamera(mode) { cameraMode = mode; document.getElementById('camera-input').click(); }
+function apriGalleria(mode) { cameraMode = mode; document.getElementById('gallery-input').click(); }
+
+// ─── LETTURA IMMAGINE → OCR ───
+function leggiImmagine(file, mode) {
+  mostraLoadingDisplay(mode);
+  const reader = new FileReader();
+  reader.onload = ev => estraiTarga(ev.target.result, mode);
+  reader.readAsDataURL(file);
+}
+
+function mostraLoadingDisplay(mode) {
+  const id = mode === 'ingresso' ? 'targa-display-in' : 'targa-display-out';
+  document.getElementById(id).innerHTML = '<div style="color:var(--accent3);font-size:16px;text-align:center;">🔍 Analisi targa in corso...</div>';
+}
+
+function estraiTarga(imageData, mode) {
+  // Ridimensiona l'immagine prima di inviarla (max 800px, jpeg 0.8)
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    const MAX = 800;
+    let w = img.width, h = img.height;
+    if (w > MAX || h > MAX) {
+      if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+      else { w = Math.round(w * MAX / h); h = MAX; }
+    }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const ridotta = canvas.toDataURL('image/jpeg', 0.8);
+    inviaAlProxy(ridotta, mode);
+  };
+  img.src = imageData;
+}
+
+function inviaAlProxy(imageData, mode) {
+  const base64 = imageData.split(',')[1];
+  mostraDebug(mode, '📐 Dimensione: ' + Math.round(base64.length / 1024) + ' KB');
+  mostraDebug(mode, '📡 Chiamata proxy in corso...');
+
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 30000);
+
+  fetch('https://charlotte-proxy.onrender.com/read-plate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ image: base64, mime: 'image/jpeg' }),
+    signal: controller.signal
+  })
+  .then(r => { clearTimeout(tid); mostraDebug(mode, '📥 HTTP status: ' + r.status); return r.json(); })
+  .then(data => {
+    mostraDebug(mode, '📋 Risposta: ' + JSON.stringify(data).substring(0, 200));
+    resetDisplay(mode);
+    if (data.results && data.results.length > 0) {
+      const targa = data.results[0].plate.toUpperCase();
+      const conf = Math.round(data.results[0].score * 100);
+      apriOCROverlay(targa, conf, mode);
+    } else {
+      apriOCROverlay('', 0, mode);
+    }
+  })
+  .catch(err => {
+    clearTimeout(tid);
+    mostraDebug(mode, '❌ Errore: ' + err.message);
+    resetDisplay(mode);
+    apriOCROverlay('', 0, mode);
+  });
+}
+
+function mostraDebug(mode, msg) {
+  const id = mode === 'ingresso' ? 'targa-display-in' : 'targa-display-out';
+  const el = document.getElementById(id);
+  if (el) {
+    const dbg = document.createElement('div');
+    dbg.style.cssText = 'font-size:11px;color:#f59e0b;font-family:monospace;margin-top:4px;word-break:break-all;text-align:left;';
+    dbg.textContent = msg;
+    el.appendChild(dbg);
+  }
+  console.log('[Charlotte OCR]', msg);
+}
+
+// ─── OCR OVERLAY (invece del prompt) ───
+let ocrTargaMode = '';
+function apriOCROverlay(targa, conf, mode) {
+  ocrTargaMode = mode;
+  document.getElementById('ocr-input').value = targa;
+  document.getElementById('ocr-conf').textContent = conf > 0 ? `Confidenza: ${conf}%` : 'Nessuna targa rilevata — inserisci manualmente';
+  document.getElementById('ocr-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('ocr-input').focus(), 100);
+}
+function confermaOCR() {
+  const val = document.getElementById('ocr-input').value.trim().toUpperCase();
+  document.getElementById('ocr-overlay').classList.remove('show');
+  if (val.length >= 5) impostaTarga(val, ocrTargaMode);
+}
+function annullaOCR() {
+  document.getElementById('ocr-overlay').classList.remove('show');
+}
+
+// ─── GESTIONE TARGA ───
+function impostaTarga(targa, mode) {
+  if (mode === 'ingresso') {
+    targaCorrente = targa;
+    document.getElementById('targa-ph-in').style.display = 'none';
+    document.getElementById('targa-val-in').style.display = 'block';
+    document.getElementById('targa-val-in').textContent = targa;
+    document.getElementById('targa-display-in').classList.add('has-targa');
+    document.getElementById('manual-in').value = targa;
+    checkConfermaIngresso();
+  } else {
+    targaUscita = targa;
+    document.getElementById('targa-ph-out').style.display = 'none';
+    document.getElementById('targa-val-out').style.display = 'block';
+    document.getElementById('targa-val-out').textContent = targa;
+    document.getElementById('targa-display-out').classList.add('has-targa');
+    document.getElementById('manual-out').value = targa;
+    cercaSostaAttiva(targa);
+  }
+}
+
+function resetDisplay(mode) {
+  if (mode === 'ingresso') {
+    document.getElementById('targa-display-in').innerHTML =
+      '<div class="targa-placeholder" id="targa-ph-in">Scansiona o inserisci targa</div>'+
+      '<div class="targa-value" id="targa-val-in" style="display:none"></div>';
+  } else {
+    document.getElementById('targa-display-out').innerHTML =
+      '<div class="targa-placeholder" id="targa-ph-out">Scansiona o inserisci targa</div>'+
+      '<div class="targa-value" id="targa-val-out" style="display:none"></div>';
+  }
+}
+
+function manualInput(mode) {
+  const val = document.getElementById(mode==='ingresso'?'manual-in':'manual-out').value;
+  if (val.length >= 5) {
+    if (mode === 'ingresso') { targaCorrente = val; document.getElementById('targa-ph-in').style.display='none'; document.getElementById('targa-val-in').style.display='block'; document.getElementById('targa-val-in').textContent=val; document.getElementById('targa-display-in').classList.add('has-targa'); checkConfermaIngresso(); }
+    else { targaUscita = val; document.getElementById('targa-ph-out').style.display='none'; document.getElementById('targa-val-out').style.display='block'; document.getElementById('targa-val-out').textContent=val; document.getElementById('targa-display-out').classList.add('has-targa'); }
+  }
+}
+function confermaTargaManuale(mode) {
+  const val = document.getElementById(mode==='ingresso'?'manual-in':'manual-out').value;
+  if (val.length >= 5) { if (mode==='uscita') cercaSostaAttiva(val); impostaTarga(val, mode); }
+}
+
+// ─── TIPO VEICOLO ───
+function selezionaTipo(btn, tipo) {
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  convSelezionata = ''; categoriaSelezionata = '';
+  const catSec = document.getElementById('cat-section');
+  if (catSec) catSec.style.display = 'none';
+  const convSearch = document.getElementById('conv-search');
+  if (convSearch) convSearch.value = '';
+  const convDd = document.getElementById('conv-dropdown');
+  if (convDd) convDd.style.display = 'none';
+  const convBadge = document.getElementById('conv-selected-badge');
+  if (convBadge) convBadge.style.display = 'none';
+  const infoEl = document.getElementById('conv-info');
+  if (infoEl) infoEl.style.display = 'none';
+  btn.classList.add('selected'); tipoVeicoloSelezionato = tipo; checkConfermaIngresso();
+}
+function checkConfermaIngresso() {
+  const catOk = !convSelezionata || convSelezionata === 'NESSUNA' || !!categoriaSelezionata;
+  document.getElementById('btn-conferma-in').classList.toggle('enabled', targaCorrente.length >= 5 && !!tipoVeicoloSelezionato && !!convSelezionata && catOk);
+}
+
+// ─── INGRESSO ───
+function confermaIngresso() {
+  if (!targaCorrente || !tipoVeicoloSelezionato) return;
+  const ts = formatDatetime(new Date());
+  const sosta = { id: contatore++, targa: targaCorrente, tipo: tipoVeicoloSelezionato, garage: garageAttuale, convenzione: convSelezionata, categoria: categoriaSelezionata, ingresso: ts, uscita: null, durata: null };
+  localStorage.setItem('charlotte_counter', contatore);
+  const soste = getSoste(); soste.push(sosta); saveSoste(soste);
+  salvaSostaRemota(sosta);
+  document.getElementById('overlay-icon').textContent = '✅';
+  document.getElementById('overlay-targa').textContent = targaCorrente;
+  document.getElementById('overlay-title').textContent = 'INGRESSO REGISTRATO';
+  document.getElementById('overlay-sub').textContent = ts + ' — Tocca per continuare';
+  document.getElementById('overlay').classList.add('show');
+}
+function resetIngresso() {
+  targaCorrente = ''; tipoVeicoloSelezionato = '';
+  document.getElementById('targa-ph-in').style.display='block'; document.getElementById('targa-val-in').style.display='none';
+  document.getElementById('targa-display-in').classList.remove('has-targa');
+  document.getElementById('manual-in').value='';
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  convSelezionata = ''; categoriaSelezionata = '';
+  const catSec = document.getElementById('cat-section');
+  if (catSec) catSec.style.display = 'none';
+  const convSearch = document.getElementById('conv-search');
+  if (convSearch) convSearch.value = '';
+  const convDd = document.getElementById('conv-dropdown');
+  if (convDd) convDd.style.display = 'none';
+  const convBadge = document.getElementById('conv-selected-badge');
+  if (convBadge) convBadge.style.display = 'none';
+  const infoEl = document.getElementById('conv-info');
+  if (infoEl) infoEl.style.display = 'none';
+  document.getElementById('btn-conferma-in').classList.remove('enabled');
+}
+
+// ─── USCITA ───
+function cercaSostaAttiva(targa) {
+  const soste = getSoste();
+  const sosta = soste.filter(s => s.targa === targa && s.garage === garageAttuale && !s.uscita).pop();
+  document.getElementById('sosta-trovata').style.display='none';
+  document.getElementById('sosta-non-trovata').style.display='none';
+  document.getElementById('btn-conferma-out').classList.remove('enabled');
+  if (sosta) {
+    const now = new Date(); const inDate = parseDatetime(sosta.ingresso);
+    const diffMins = Math.floor((now - inDate) / 60000);
+    const ore = Math.floor(diffMins / 60); const minuti = diffMins % 60;
+    document.getElementById('out-ingresso').textContent = sosta.ingresso;
+    document.getElementById('out-tipo').textContent = (sosta.tipo || '') + (sosta.convenzione && sosta.convenzione !== 'NESSUNA' ? ' · ' + sosta.convenzione : '') + (sosta.categoria ? ' · ' + sosta.categoria : '');
+    aggiornaPrezzoUscita(sosta, diffMins);
+    document.getElementById('sosta-trovata').style.display='block';
+    document.getElementById('btn-conferma-out').classList.add('enabled');
+  } else {
+    document.getElementById('sosta-non-trovata').style.display='block';
+  }
+}
+function confermaUscita() {
+  const soste = getSoste();
+  const idx = soste.findIndex(s => s.targa === targaUscita && s.garage === garageAttuale && !s.uscita);
+  if (idx === -1) return;
+  const now = new Date(); const ts = formatDatetime(now);
+  const inDate = parseDatetime(soste[idx].ingresso);
+  const diffMins = Math.floor((now - inDate) / 60000);
+  const ore = Math.floor(diffMins / 60); const minuti = diffMins % 60;
+  soste[idx].uscita = ts; soste[idx].durata = `${ore}h ${minuti}m`;
+  saveSoste(soste);
+  aggiornaSostaRemota(targaUscita, garageAttuale, ts, `${ore}h ${minuti}m`);
+  document.getElementById('overlay-icon').textContent = '🏁';
+  document.getElementById('overlay-targa').textContent = targaUscita;
+  document.getElementById('overlay-title').textContent = 'USCITA REGISTRATA';
+  document.getElementById('overlay-sub').textContent = `Durata: ${ore}h ${minuti}m — Tocca per continuare`;
+  document.getElementById('overlay').classList.add('show');
+}
+function resetUscita() {
+  targaUscita = '';
+  document.getElementById('targa-ph-out').style.display='block'; document.getElementById('targa-val-out').style.display='none';
+  document.getElementById('targa-display-out').classList.remove('has-targa');
+  document.getElementById('manual-out').value='';
+  document.getElementById('sosta-trovata').style.display='none';
+  document.getElementById('sosta-non-trovata').style.display='none';
+  document.getElementById('btn-conferma-out').classList.remove('enabled');
+}
+
+// ─── LISTA ───
+function aggiornaLista() {
+  const soste = getSoste().filter(s => s.garage === garageAttuale && !s.uscita);
+  const c = document.getElementById('lista-soste');
+  if (!soste.length) { c.innerHTML='<div class="empty-state"><div class="empty-icon">🅿️</div><div class="empty-text">Nessuna sosta attiva</div></div>'; return; }
+  c.innerHTML = soste.reverse().map(s => {
+    const diff = Math.floor((new Date() - parseDatetime(s.ingresso)) / 60000);
+    return `<div class="sosta-card attiva"><div class="sosta-info"><div class="sosta-targa">${s.targa}</div><div class="sosta-tipo">${s.tipo}</div></div><div><div class="sosta-time">${s.ingresso.split(' ')[1]}</div><div class="sosta-duration">${Math.floor(diff/60)}h ${diff%60}m</div></div><button class="uscita-quick-btn" onclick="uscitaRapida('${s.targa}')">Uscita</button></div>`;
+  }).join('');
+}
+function uscitaRapida(targa) { showScreen('uscita'); impostaTarga(targa, 'uscita'); cercaSostaAttiva(targa); }
+
+// ─── RICERCA ───
+function cercaTarga(q) {
+  if (q.length < 3) { document.getElementById('search-results').innerHTML=''; return; }
+  const soste = getSoste().filter(s => s.garage === garageAttuale && s.targa.includes(q)).reverse().slice(0,10);
+  const c = document.getElementById('search-results');
+  if (!soste.length) { c.innerHTML='<div class="empty-state"><div class="empty-text">Nessun risultato</div></div>'; return; }
+  c.innerHTML = `<div class="section-label">${soste.length} risultati</div>` + soste.map(s =>
+    `<div class="sosta-card ${s.uscita?'chiusa':'attiva'}"><div class="sosta-info"><div class="sosta-targa">${s.targa}</div><div class="sosta-tipo">${s.tipo} • ${s.uscita?'Chiusa':'ATTIVA'}</div></div><div><div class="sosta-time">${s.ingresso}</div>${s.durata?`<div class="sosta-duration">${s.durata}</div>`:''}</div></div>`
+  ).join('');
+}
+
+// ─── OVERLAY SUCCESSO ───
+function chiudiOverlay() { document.getElementById('overlay').classList.remove('show'); showScreen('home'); }
+
+// ─── UTILITY ───
+function formatDate(d) { return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }
+function formatDatetime(d) { return formatDate(d)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function parseDatetime(s) { const [dt,tm]=s.split(' '); const [dd,mo,yy]=dt.split('/'); const [hh,mm]=tm.split(':'); return new Date(yy,mo-1,dd,hh,mm); }
+function dataURLtoBlob(d) { const a=d.split(','); const m=a[0].match(/:(.*?);/)[1]; const b=atob(a[1]); let n=b.length; const u=new Uint8Array(n); while(n--) u[n]=b.charCodeAt(n); return new Blob([u],{type:m}); }
+
+// Init sicuro dopo DOM caricato
+document.addEventListener('DOMContentLoaded', function() {
+  aggiornaStats();
+  pinInit();
+});
+
+// ─── PIN ───
+const PIN_CORRETTO = '4422';
+const PIN_MASTER = 'Alfaromeo100%-';
+const PIN_SESSION_KEY = 'charlotte_auth';
+const PIN_TENTATIVI_KEY = 'charlotte_tentativi';
+const PIN_BLOCCO_KEY = 'charlotte_blocco';
+const MAX_TENTATIVI = 3;
+const BLOCCO_DURATA_MS = 60 * 60 * 1000; // 1 ora
+let pinInserito = '';
+let masterInserito = '';
+let modalitaMaster = false;
+
+function pinInit() {
+  if (sessionStorage.getItem(PIN_SESSION_KEY) === 'ok') {
+    document.getElementById('pin-screen').style.display = 'none';
+    return;
+  }
+
+  // Controlla se dispositivo bloccato
+  const bloccatoFino = parseInt(localStorage.getItem(PIN_BLOCCO_KEY) || '0');
+  if (bloccatoFino > Date.now()) {
+    mostraBloccato(bloccatoFino);
+    return;
+  } else {
+    // Blocco scaduto, reset tentativi
+    localStorage.removeItem(PIN_BLOCCO_KEY);
+    localStorage.removeItem(PIN_TENTATIVI_KEY);
+  }
+
+  document.getElementById('pin-screen').style.display = 'flex';
+  aggiornaTentativiUI();
+}
+
+function aggiornaTentativiUI() {
+  const tentativi = parseInt(localStorage.getItem(PIN_TENTATIVI_KEY) || '0');
+  const rimasti = MAX_TENTATIVI - tentativi;
+  if (tentativi > 0) {
+    document.getElementById('pin-error').textContent = `Tentativi rimasti: ${rimasti}`;
+  }
+}
+
+function mostraBloccato(bloccatoFino) {
+  const screen = document.getElementById('pin-screen');
+  screen.style.display = 'flex';
+  document.querySelector('.pin-grid').style.display = 'none';
+  document.querySelector('.pin-dots').style.display = 'none';
+
+  // Mostra input master
+  const masterDiv = document.getElementById('master-unlock') || creMasterInput();
+  masterDiv.style.display = 'flex';
+
+  const aggiorna = () => {
+    const rimanente = bloccatoFino - Date.now();
+    if (rimanente <= 0) {
+      location.reload();
+      return;
+    }
+    const minuti = Math.floor(rimanente / 60000);
+    const secondi = Math.floor((rimanente % 60000) / 1000);
+    document.getElementById('pin-error').textContent =
+      `🔒 Dispositivo bloccato — riprova tra ${minuti}m ${secondi}s`;
+  };
+  aggiorna();
+  setInterval(aggiorna, 1000);
+}
+
+function creMasterInput() {
+  const div = document.createElement('div');
+  div.id = 'master-unlock';
+  div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px;width:100%;max-width:280px;';
+  div.innerHTML = `
+    <div style="font-size:12px;color:var(--muted);letter-spacing:1px;">PASSWORD AMMINISTRATORE</div>
+    <input id="master-input" type="password" placeholder="Password master..."
+      style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:16px;outline:none;text-align:center;"
+      oninput="verificaMaster(this.value)">
+  `;
+  document.getElementById('pin-screen').appendChild(div);
+  return div;
+}
+
+function verificaMaster(val) {
+  if (val === PIN_MASTER) {
+    localStorage.removeItem(PIN_BLOCCO_KEY);
+    localStorage.removeItem(PIN_TENTATIVI_KEY);
+    sessionStorage.setItem(PIN_SESSION_KEY, 'ok');
+    document.getElementById('pin-screen').style.display = 'none';
+  }
+}
+
+function pinPress(cifra) {
+  if (pinInserito.length >= 4) return;
+  pinInserito += cifra;
+  aggiornaDots();
+  if (pinInserito.length === 4) {
+    setTimeout(verificaPin, 150);
+  }
+}
+
+function pinCanc() {
+  pinInserito = pinInserito.slice(0, -1);
+  aggiornaDots();
+}
+
+function aggiornaDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.classList.toggle('filled', i < pinInserito.length);
+    dot.classList.remove('error');
+  }
+}
+
+function verificaPin() {
+  if (pinInserito === PIN_CORRETTO) {
+    localStorage.removeItem(PIN_TENTATIVI_KEY);
+    localStorage.removeItem(PIN_BLOCCO_KEY);
+    sessionStorage.setItem(PIN_SESSION_KEY, 'ok');
+    document.getElementById('pin-screen').style.display = 'none';
+  } else {
+    // Incrementa tentativi
+    let tentativi = parseInt(localStorage.getItem(PIN_TENTATIVI_KEY) || '0') + 1;
+    localStorage.setItem(PIN_TENTATIVI_KEY, tentativi);
+
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('dot-' + i);
+      dot.classList.remove('filled');
+      dot.classList.add('error');
+    }
+
+    if (tentativi >= MAX_TENTATIVI) {
+      // Blocca dispositivo per 1 ora
+      const bloccatoFino = Date.now() + BLOCCO_DURATA_MS;
+      localStorage.setItem(PIN_BLOCCO_KEY, bloccatoFino);
+      // Invia email di segnalazione
+      fetch('https://charlotte-proxy.onrender.com/alert-blocco', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({timestamp: new Date().toISOString()})
+      }).catch(e => console.error('Alert email error:', e));
+      setTimeout(() => mostraBloccato(bloccatoFino), 800);
+    } else {
+      const rimasti = MAX_TENTATIVI - tentativi;
+      document.getElementById('pin-error').textContent =
+        `PIN non corretto — Tentativi rimasti: ${rimasti}`;
+      setTimeout(() => {
+        for (let i = 0; i < 4; i++) {
+          document.getElementById('dot-' + i).classList.remove('error');
+        }
+        pinInserito = '';
+      }, 1000);
+    }
+  }
+}
+
+
+
+// ─── CONVENZIONE ───
+let convSelezionata = 'NESSUNA';
+let categoriaSelezionata = '';
+
+function selezionaConvSelect(conv) {
+  convSelezionata = conv;
+  const catSection = document.getElementById('cat-section');
+  const infoEl = document.getElementById('conv-info');
+
+  // Tariffe info
+  const tariffe = {
+    'HOTEL MEDICI': '24€ piccole/medie · 40€ grandi/luxury',
+    'HOTEL BODONI': '25€ piccole/medie · 35€ grandi/luxury',
+    'HOTEL JAMES': '35€ piccole/medie · 45€ grandi/luxury',
+    'CASA MAGATA': '35€ piccole/medie · 45€ grandi/luxury',
+    'IMMOBILI LUXURY': '35€ piccole/medie · 45€ grandi/luxury',
+  };
+  const tariffeStandard = '30€ piccole/medie · 40€ grandi · 50€ van/luxury';
+
+  if (conv && conv !== 'NESSUNA') {
+    catSection.style.display = 'block';
+    infoEl.style.display = 'block';
+    infoEl.textContent = '💶 ' + (tariffe[conv] || tariffeStandard);
+  } else {
+    catSection.style.display = 'none';
+    categoriaSelezionata = '';
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+    infoEl.style.display = 'none';
+  }
+  checkConfermaIngresso();
+}
+
+function selezionaConv(btn, conv) {
+  selezionaConvSelect(conv);
+}
+
+function selezionaCat(btn, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  categoriaSelezionata = cat;
+  checkConfermaIngresso();
+}
+
+// ─── PROXY API ───
+const PROXY = 'https://charlotte-proxy.onrender.com';
+
+async function salvaSostaRemota(sosta) {
+  try {
+    await fetch(PROXY + '/soste', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(sosta)
+    });
+  } catch(e) {
+    console.error('Errore salvataggio remoto:', e);
+  }
+}
+
+async function aggiornaSostaRemota(targa, garage, uscita, durata) {
+  try {
+    await fetch(PROXY + '/soste', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({targa, garage, uscita, durata})
+    });
+  } catch(e) {
+    console.error('Errore aggiornamento remoto:', e);
+  }
+}
+
+async function caricaSosteRemote(garage, attive) {
+  let url = PROXY + '/soste?garage=' + garage;
+  if (attive) url += '&attive=1';
+  const r = await fetch(url);
+  return await r.json();
+}
+
+// ─── REPORT ───
+async function aggiornaReport() {
+  const conv = document.getElementById('filter-conv').value;
+  const stato = document.getElementById('filter-stato').value;
+  const loading = document.getElementById('report-loading');
+  const list = document.getElementById('report-list');
+
+  loading.style.display = 'block';
+  list.innerHTML = '';
+
+  try {
+    let url = PROXY + '/soste?garage=' + garageAttuale;
+    if (stato === 'attiva') url += '&attive=1';
+    const soste = await (await fetch(url)).json();
+
+    let filtrate = soste;
+    if (conv) filtrate = filtrate.filter(s => s.convenzione === conv);
+    if (stato === 'chiusa') filtrate = filtrate.filter(s => s.uscita);
+
+    loading.style.display = 'none';
+
+    if (!filtrate.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">Nessuna sosta trovata</div></div>';
+      return;
+    }
+
+    list.innerHTML = `<div class="section-label">${filtrate.length} soste</div>` +
+      filtrate.reverse().map(s => `
+        <div class="sosta-card ${s.uscita ? 'chiusa' : 'attiva'}">
+          <div class="sosta-info">
+            <div class="sosta-targa">${s.targa}</div>
+            <div class="sosta-tipo">${s.tipo || ''} ${s.convenzione && s.convenzione !== 'NESSUNA' ? '· ' + s.convenzione : ''} ${s.categoria ? '· Cat.' + s.categoria : ''}</div>
+          </div>
+          <div>
+            <div class="sosta-time" style="font-size:10px;">${s.ingresso || ''}</div>
+            ${s.uscita ? `<div class="sosta-duration">${s.durata || ''}</div>` : '<div style="color:var(--green);font-size:11px;">ATTIVA</div>'}
+          </div>
+        </div>`).join('');
+  } catch(e) {
+    loading.style.display = 'none';
+    list.innerHTML = '<div class="empty-state"><div class="empty-text">Errore caricamento dati</div></div>';
+  }
+}
+
+
+// ─── CONVENZIONI SEARCHABLE ───
+const TUTTE_CONVENZIONI = [
+  { val: 'NESSUNA', label: 'Nessuna convenzione', tariffa: '' },
+  { val: 'HOTEL MEDICI', label: 'Hotel Medici', tariffa: '24€ piccole/medie · 40€ grandi/luxury' },
+  { val: 'HOTEL BODONI', label: 'Hotel Bodoni', tariffa: '25€ piccole/medie · 35€ grandi/luxury' },
+  { val: 'HOTEL JAMES', label: 'Hotel James', tariffa: '35€ piccole/medie · 45€ grandi/luxury' },
+  { val: 'CASA MAGATA', label: 'Casa Magata', tariffa: '35€ piccole/medie · 45€ grandi/luxury' },
+  { val: 'IMMOBILI LUXURY', label: 'Immobili Luxury', tariffa: '35€ piccole/medie · 45€ grandi/luxury' },
+  { val: 'MEDUSA', label: 'Medusa', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PIETRAPIANA BOUTIQUE', label: 'Pietrapiana Boutique Apartments', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'MEGGY HOUSE', label: 'Meggy House', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'BALOCCHINI', label: 'Balocchini', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PALAZZO GRAZIANI', label: 'Palazzo Graziani', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'FIRENZE SUITES', label: 'Firenze Suites', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'OBLATE', label: 'Oblate', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA ROVAI', label: 'Casa Rovai', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA MORFEO', label: 'Casa Morfeo', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'MAMO FLORENCE', label: 'Mamo Florence', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'EDEN', label: 'Eden', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'FLORENCE ROOMS', label: 'Florence Rooms', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'ANGELICA HOUSE', label: 'Angelica House', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'KURSAAL', label: 'Kursaal', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA STELLA', label: 'Casa Stella', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PALAZZO CIOMPI', label: 'Palazzo Ciompi', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'LUXURY FLORENCE', label: 'Luxury Florence', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PEPI MODERN', label: 'Pepi Modern', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'DIMORA VECCHIA FIRENZE', label: 'Dimora Vecchia Firenze', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA VIGNALE', label: 'Casa Vignale', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'BLU NOTTE', label: 'Blu Notte', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'ANTICA DIMORA', label: 'Antica Dimora', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'LOCANDA CIOMPI', label: 'Locanda Ciompi', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'BAVARIA', label: 'Bavaria', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CANTO DEGLI ARANCI', label: 'Canto degli Aranci', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+];
+
+function mostraDropdownConv() {
+  filtraConvenzioni(document.getElementById('conv-search').value);
+}
+
+function filtraConvenzioni(query) {
+  const dd = document.getElementById('conv-dropdown');
+  const q = query.trim().toLowerCase();
+  const filtrate = q.length === 0
+    ? TUTTE_CONVENZIONI
+    : TUTTE_CONVENZIONI.filter(c => c.label.toLowerCase().includes(q) || c.val.toLowerCase().includes(q));
+
+  if (!filtrate.length) {
+    dd.innerHTML = '<div class="conv-item" style="color:var(--muted);">Nessun risultato</div>';
+  } else {
+    dd.innerHTML = filtrate.map(c => `
+      <div class="conv-item" onclick="scegliConvenzione('${c.val}', '${c.label}', '${c.tariffa}')">
+        ${c.label}
+        ${c.tariffa ? `<div class="conv-item-sub">💶 ${c.tariffa}</div>` : ''}
+      </div>`).join('');
+  }
+  dd.style.display = 'block';
+}
+
+function scegliConvenzione(val, label, tariffa) {
+  convSelezionata = val;
+  const search = document.getElementById('conv-search');
+  const dd = document.getElementById('conv-dropdown');
+  const badge = document.getElementById('conv-selected-badge');
+  const infoEl = document.getElementById('conv-info');
+  const catSection = document.getElementById('cat-section');
+
+  search.value = '';
+  dd.style.display = 'none';
+
+  if (val && val !== 'NESSUNA') {
+    badge.style.display = 'block';
+    badge.textContent = '✓ ' + label;
+    if (tariffa) {
+      infoEl.style.display = 'block';
+      infoEl.textContent = '💶 ' + tariffa;
+    }
+    if (catSection) catSection.style.display = 'block';
+  } else {
+    badge.style.display = 'none';
+    infoEl.style.display = 'none';
+    if (catSection) catSection.style.display = 'none';
+    categoriaSelezionata = '';
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  }
+  checkConfermaIngresso();
+}
+
+// Chiudi dropdown cliccando fuori
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('conv-dropdown');
+  const search = document.getElementById('conv-search');
+  if (dd && search && !dd.contains(e.target) && e.target !== search) {
+    dd.style.display = 'none';
+  }
+});
+
+
+// ─── TARIFFE FIESOLANA ───
+const TARIFFE = {
+  // [tariffa_oraria_piccola, tariffa_oraria_medigrande, tariffa_oraria_luxuryvan, giornaliero_piccola, giornaliero_medigrande]
+  'NESSUNA':              { ore: { 'PICCOLA': 7, 'MEDIA-GRANDE': 8, 'LUXURY-VAN': 10 }, giorno: { 'PICCOLA': null, 'MEDIA-GRANDE': null, 'LUXURY-VAN': null }, soloGiorno: false },
+  'HOTEL MEDICI':         { ore: null, giorno: { 'CAT-A': 24, 'CAT-B': 40 }, soloGiorno: true },
+  'HOTEL BODONI':         { ore: { 'CAT-A': 5, 'CAT-B': 7 }, giorno: { 'CAT-A': 25, 'CAT-B': 35 }, soloGiorno: false },
+  'HOTEL JAMES':          { ore: { 'CAT-A': 7, 'CAT-B': 10 }, giorno: { 'CAT-A': 35, 'CAT-B': 50 }, soloGiorno: false },
+  'CASA MAGATA':          { ore: { 'CAT-A': 7, 'CAT-B': 9 }, giorno: { 'CAT-A': 35, 'CAT-B': 45 }, soloGiorno: false },
+  'IMMOBILI LUXURY':      { ore: { 'CAT-A': 7, 'CAT-B': 9 }, giorno: { 'CAT-A': 35, 'CAT-B': 45 }, soloGiorno: false },
+  'MAMO FLORENCE':        { ore: { 'CAT-A': 6, 'CAT-B': 7 }, giorno: { 'CAT-A': 30, 'CAT-B': 35 }, soloGiorno: false },
+  // Tutte le altre standard (30€/40€/gg)
+  'DEFAULT_CONV':         { ore: { 'CAT-A': 6, 'CAT-B': 8 }, giorno: { 'CAT-A': 30, 'CAT-B': 40 }, soloGiorno: false },
+};
+
+const STRUTTURE_STANDARD = ['MEDUSA','PIETRAPIANA BOUTIQUE','MEGGY HOUSE','BALOCCHINI','PALAZZO GRAZIANI',
+  'FIRENZE SUITES','OBLATE','CASA ROVAI','CASA MORFEO','EDEN','FLORENCE ROOMS','ANGELICA HOUSE',
+  'KURSAAL','CASA STELLA','PALAZZO CIOMPI','LUXURY FLORENCE','PEPI MODERN','DIMORA VECCHIA FIRENZE',
+  'CASA VIGNALE','BLU NOTTE','ANTICA DIMORA','LOCANDA CIOMPI','BAVARIA','CANTO DEGLI ARANCI'];
+
+function calcolaPrezzo(convenzione, categoria, minutiTotali) {
+  const ore = minutiTotali / 60;
+  const giorni = minutiTotali / (60 * 24);
+
+  // Ottieni tariffa
+  let tariffa;
+  if (!convenzione || convenzione === 'NESSUNA') {
+    tariffa = TARIFFE['NESSUNA'];
+  } else if (TARIFFE[convenzione]) {
+    tariffa = TARIFFE[convenzione];
+  } else if (STRUTTURE_STANDARD.includes(convenzione)) {
+    tariffa = TARIFFE['DEFAULT_CONV'];
+  } else {
+    return null; // tariffa non disponibile
+  }
+
+  // Hotel Medici: solo giornaliero
+  if (tariffa.soloGiorno) {
+    const notti = Math.ceil(giorni);
+    const catKey = categoria || 'CAT-A';
+    const prezzoGiorno = tariffa.giorno[catKey] || 0;
+    return {
+      importo: notti * prezzoGiorno,
+      dettaglio: `${notti} notte/i × ${prezzoGiorno}€ = ${notti * prezzoGiorno}€`,
+      tipo: 'giornaliero'
+    };
+  }
+
+  // Determina chiave categoria
+  let catKey;
+  if (convenzione === 'NESSUNA' || !convenzione) {
+    catKey = categoria; // PICCOLA, MEDIA-GRANDE, LUXURY-VAN
+  } else {
+    catKey = categoria; // CAT-A, CAT-B
+  }
+
+  if (!catKey) return null;
+
+  // Logica: prime 4 ore → tariffa oraria, dopo → giornaliero
+  if (minutiTotali <= 240) {
+    // Meno di 4 ore → tariffa oraria
+    if (!tariffa.ore) return null;
+    const tarifOra = tariffa.ore[catKey];
+    if (!tarifOra) return null;
+    const oreArrotondate = Math.ceil(ore);
+    const importo = oreArrotondate * tarifOra;
+    return {
+      importo,
+      dettaglio: `${oreArrotondate} ora/e × ${tarifOra}€/h = ${importo}€`,
+      tipo: 'orario'
+    };
+  } else {
+    // Più di 4 ore → giornaliero (ogni 24h iniziate)
+    const prezzoGiorno = tariffa.giorno[catKey];
+    if (!prezzoGiorno) return null;
+    const notti = Math.ceil(giorni);
+    const importo = notti * prezzoGiorno;
+    return {
+      importo,
+      dettaglio: `${notti} notte/i × ${prezzoGiorno}€ = ${importo}€`,
+      tipo: 'giornaliero'
+    };
+  }
+}
+
+// ─── Aggiorna display durata+prezzo nella schermata uscita ───
+function aggiornaPrezzoUscita(sosta, minutiTotali) {
+  const ore = Math.floor(minutiTotali / 60);
+  const minuti = minutiTotali % 60;
+  document.getElementById('out-durata').textContent = `${ore}h ${minuti}m`;
+
+  const convenzione = sosta.convenzione || 'NESSUNA';
+  const categoria = sosta.categoria || sosta.tipo;
+  const risultato = calcolaPrezzo(convenzione, categoria, minutiTotali);
+
+  const prezzoEl = document.getElementById('out-prezzo');
+  if (risultato) {
+    prezzoEl.style.display = 'block';
+    prezzoEl.innerHTML = `
+      <div style="color:var(--green);font-size:18px;font-weight:bold;font-family:'Share Tech Mono',monospace;">
+        💶 ${risultato.importo}€
+      </div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px;">${risultato.dettaglio}</div>
+    `;
+  } else {
+    prezzoEl.style.display = 'block';
+    prezzoEl.innerHTML = '<div style="color:var(--amber);font-size:12px;">⚠️ Tariffa non disponibile — calcolo manuale</div>';
+  }
+}
+
 </script>
+
+<!-- ═══ PIN SCREEN ═══ -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-logo">
+    <div class="pin-logo-icon">C</div>
+    <div class="pin-logo-text">CHARLOTTE</div>
+    <div class="pin-subtitle">CITY PARKING — ACCESSO RISERVATO</div>
+  </div>
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="dot-0"></div>
+    <div class="pin-dot" id="dot-1"></div>
+    <div class="pin-dot" id="dot-2"></div>
+    <div class="pin-dot" id="dot-3"></div>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-grid">
+    <div class="pin-btn" onclick="pinPress('1')">1</div>
+    <div class="pin-btn" onclick="pinPress('2')">2</div>
+    <div class="pin-btn" onclick="pinPress('3')">3</div>
+    <div class="pin-btn" onclick="pinPress('4')">4</div>
+    <div class="pin-btn" onclick="pinPress('5')">5</div>
+    <div class="pin-btn" onclick="pinPress('6')">6</div>
+    <div class="pin-btn" onclick="pinPress('7')">7</div>
+    <div class="pin-btn" onclick="pinPress('8')">8</div>
+    <div class="pin-btn" onclick="pinPress('9')">9</div>
+    <div class="pin-btn zero" onclick="pinPress('0')">0</div>
+    <div class="pin-btn canc" onclick="pinCanc()">⌫</div>
+  </div>
+</div>
+
+</body>
+</html>
