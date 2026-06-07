@@ -201,6 +201,13 @@
     .cat-btn { font-size:18px; padding:12px; }
   }
 
+
+  .conv-item { padding:12px 16px; cursor:pointer; font-size:14px; color:var(--text); border-bottom:1px solid var(--border); transition:background 0.15s; }
+  .conv-item:last-child { border-bottom:none; }
+  .conv-item:hover, .conv-item:active { background:rgba(124,58,237,0.15); color:var(--accent3); }
+  .conv-item .conv-item-sub { font-size:11px; color:var(--muted); margin-top:2px; font-family:'Share Tech Mono',monospace; }
+  @media (min-width:600px) { .conv-item { font-size:18px; padding:14px 18px; } .conv-item .conv-item-sub { font-size:14px; } }
+
 </style>
 </head>
 <body>
@@ -301,47 +308,16 @@
 
   <div class="conv-section" id="conv-section">
     <div class="manual-label">Convenzione hotel</div>
-    <div style="margin-top:8px;">
-      <select id="conv-select" onchange="selezionaConvSelect(this.value)" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;outline:none;">
-        <option value="">-- Seleziona --</option>
-        <option value="NESSUNA">🅿️ Nessuna convenzione</option>
-        <optgroup label="Tariffe speciali">
-          <option value="HOTEL MEDICI">Hotel Medici (24€/40€)</option>
-          <option value="HOTEL BODONI">Hotel Bodoni (25€/35€)</option>
-          <option value="HOTEL JAMES">Hotel James (35€/45€)</option>
-          <option value="CASA MAGATA">Casa Magata (35€/45€)</option>
-          <option value="IMMOBILI LUXURY">Immobili Luxury (35€/45€)</option>
-        </optgroup>
-        <optgroup label="Tariffe standard (30€/40€/50€)">
-          <option value="MEDUSA">Medusa</option>
-          <option value="PIETRAPIANA BOUTIQUE">Pietrapiana Boutique Apartments</option>
-          <option value="MEGGY HOUSE">Meggy House</option>
-          <option value="BALOCCHINI">Balocchini</option>
-          <option value="PALAZZO GRAZIANI">Palazzo Graziani</option>
-          <option value="FIRENZE SUITES">Firenze Suites</option>
-          <option value="OBLATE">Oblate</option>
-          <option value="CASA ROVAI">Casa Rovai</option>
-          <option value="CASA MORFEO">Casa Morfeo</option>
-          <option value="MAMO FLORENCE">Mamo Florence</option>
-          <option value="EDEN">Eden</option>
-          <option value="FLORENCE ROOMS">Florence Rooms</option>
-          <option value="ANGELICA HOUSE">Angelica House</option>
-          <option value="KURSAAL">Kursaal</option>
-          <option value="CASA STELLA">Casa Stella</option>
-          <option value="PALAZZO CIOMPI">Palazzo Ciompi</option>
-          <option value="LUXURY FLORENCE">Luxury Florence</option>
-          <option value="PEPI MODERN">Pepi Modern</option>
-          <option value="DIMORA VECCHIA FIRENZE">Dimora Vecchia Firenze</option>
-          <option value="CASA VIGNALE">Casa Vignale</option>
-          <option value="BLU NOTTE">Blu Notte</option>
-          <option value="ANTICA DIMORA">Antica Dimora</option>
-          <option value="LOCANDA CIOMPI">Locanda Ciompi</option>
-          <option value="BAVARIA">Bavaria</option>
-          <option value="CANTO DEGLI ARANCI">Canto degli Aranci</option>
-        </optgroup>
-      </select>
+    <div style="margin-top:8px;position:relative;">
+      <input id="conv-search" type="text" placeholder="🔍 Cerca struttura o scrivi Nessuna..." 
+        autocomplete="off"
+        oninput="filtraConvenzioni(this.value)"
+        onfocus="mostraDropdownConv()"
+        style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;outline:none;">
+      <div id="conv-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--panel);border:1px solid var(--accent);border-radius:10px;max-height:220px;overflow-y:auto;z-index:99;margin-top:4px;box-shadow:0 8px 24px rgba(0,0,0,0.5);"></div>
     </div>
-    <div id="conv-info" style="margin-top:8px;font-size:12px;color:var(--green);display:none;font-family:'Share Tech Mono',monospace;"></div>
+    <div id="conv-selected-badge" style="display:none;margin-top:8px;background:rgba(124,58,237,0.15);border:1px solid var(--accent);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--accent3);font-family:'Share Tech Mono',monospace;"></div>
+    <div id="conv-info" style="margin-top:6px;font-size:12px;color:var(--green);display:none;font-family:'Share Tech Mono',monospace;"></div>
     <div id="cat-section" style="display:none; margin-top:10px;">
       <div class="manual-label" style="margin-bottom:6px;">Categoria</div>
       <div class="cat-row">
@@ -700,8 +676,12 @@ function selezionaTipo(btn, tipo) {
   convSelezionata = ''; categoriaSelezionata = '';
   const catSec = document.getElementById('cat-section');
   if (catSec) catSec.style.display = 'none';
-  const convSel = document.getElementById('conv-select');
-  if (convSel) convSel.value = '';
+  const convSearch = document.getElementById('conv-search');
+  if (convSearch) convSearch.value = '';
+  const convDd = document.getElementById('conv-dropdown');
+  if (convDd) convDd.style.display = 'none';
+  const convBadge = document.getElementById('conv-selected-badge');
+  if (convBadge) convBadge.style.display = 'none';
   const infoEl = document.getElementById('conv-info');
   if (infoEl) infoEl.style.display = 'none';
   btn.classList.add('selected'); tipoVeicoloSelezionato = tipo; checkConfermaIngresso();
@@ -735,8 +715,12 @@ function resetIngresso() {
   convSelezionata = ''; categoriaSelezionata = '';
   const catSec = document.getElementById('cat-section');
   if (catSec) catSec.style.display = 'none';
-  const convSel = document.getElementById('conv-select');
-  if (convSel) convSel.value = '';
+  const convSearch = document.getElementById('conv-search');
+  if (convSearch) convSearch.value = '';
+  const convDd = document.getElementById('conv-dropdown');
+  if (convDd) convDd.style.display = 'none';
+  const convBadge = document.getElementById('conv-selected-badge');
+  if (convBadge) convBadge.style.display = 'none';
   const infoEl = document.getElementById('conv-info');
   if (infoEl) infoEl.style.display = 'none';
   document.getElementById('btn-conferma-in').classList.remove('enabled');
@@ -1009,6 +993,103 @@ async function aggiornaReport() {
     list.innerHTML = '<div class="empty-state"><div class="empty-text">Errore caricamento dati</div></div>';
   }
 }
+
+
+// ─── CONVENZIONI SEARCHABLE ───
+const TUTTE_CONVENZIONI = [
+  { val: 'NESSUNA', label: 'Nessuna convenzione', tariffa: '' },
+  { val: 'HOTEL MEDICI', label: 'Hotel Medici', tariffa: '24€ piccole/medie · 40€ grandi/luxury' },
+  { val: 'HOTEL BODONI', label: 'Hotel Bodoni', tariffa: '25€ piccole/medie · 35€ grandi/luxury' },
+  { val: 'HOTEL JAMES', label: 'Hotel James', tariffa: '35€ piccole/medie · 45€ grandi/luxury' },
+  { val: 'CASA MAGATA', label: 'Casa Magata', tariffa: '35€ piccole/medie · 45€ grandi/luxury' },
+  { val: 'IMMOBILI LUXURY', label: 'Immobili Luxury', tariffa: '35€ piccole/medie · 45€ grandi/luxury' },
+  { val: 'MEDUSA', label: 'Medusa', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PIETRAPIANA BOUTIQUE', label: 'Pietrapiana Boutique Apartments', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'MEGGY HOUSE', label: 'Meggy House', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'BALOCCHINI', label: 'Balocchini', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PALAZZO GRAZIANI', label: 'Palazzo Graziani', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'FIRENZE SUITES', label: 'Firenze Suites', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'OBLATE', label: 'Oblate', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA ROVAI', label: 'Casa Rovai', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA MORFEO', label: 'Casa Morfeo', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'MAMO FLORENCE', label: 'Mamo Florence', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'EDEN', label: 'Eden', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'FLORENCE ROOMS', label: 'Florence Rooms', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'ANGELICA HOUSE', label: 'Angelica House', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'KURSAAL', label: 'Kursaal', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA STELLA', label: 'Casa Stella', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PALAZZO CIOMPI', label: 'Palazzo Ciompi', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'LUXURY FLORENCE', label: 'Luxury Florence', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'PEPI MODERN', label: 'Pepi Modern', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'DIMORA VECCHIA FIRENZE', label: 'Dimora Vecchia Firenze', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CASA VIGNALE', label: 'Casa Vignale', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'BLU NOTTE', label: 'Blu Notte', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'ANTICA DIMORA', label: 'Antica Dimora', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'LOCANDA CIOMPI', label: 'Locanda Ciompi', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'BAVARIA', label: 'Bavaria', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+  { val: 'CANTO DEGLI ARANCI', label: 'Canto degli Aranci', tariffa: '30€ piccole/medie · 40€ grandi · 50€ van/luxury' },
+];
+
+function mostraDropdownConv() {
+  filtraConvenzioni(document.getElementById('conv-search').value);
+}
+
+function filtraConvenzioni(query) {
+  const dd = document.getElementById('conv-dropdown');
+  const q = query.trim().toLowerCase();
+  const filtrate = q.length === 0
+    ? TUTTE_CONVENZIONI
+    : TUTTE_CONVENZIONI.filter(c => c.label.toLowerCase().includes(q) || c.val.toLowerCase().includes(q));
+
+  if (!filtrate.length) {
+    dd.innerHTML = '<div class="conv-item" style="color:var(--muted);">Nessun risultato</div>';
+  } else {
+    dd.innerHTML = filtrate.map(c => `
+      <div class="conv-item" onclick="scegliConvenzione('${c.val}', '${c.label}', '${c.tariffa}')">
+        ${c.label}
+        ${c.tariffa ? `<div class="conv-item-sub">💶 ${c.tariffa}</div>` : ''}
+      </div>`).join('');
+  }
+  dd.style.display = 'block';
+}
+
+function scegliConvenzione(val, label, tariffa) {
+  convSelezionata = val;
+  const search = document.getElementById('conv-search');
+  const dd = document.getElementById('conv-dropdown');
+  const badge = document.getElementById('conv-selected-badge');
+  const infoEl = document.getElementById('conv-info');
+  const catSection = document.getElementById('cat-section');
+
+  search.value = '';
+  dd.style.display = 'none';
+
+  if (val && val !== 'NESSUNA') {
+    badge.style.display = 'block';
+    badge.textContent = '✓ ' + label;
+    if (tariffa) {
+      infoEl.style.display = 'block';
+      infoEl.textContent = '💶 ' + tariffa;
+    }
+    if (catSection) catSection.style.display = 'block';
+  } else {
+    badge.style.display = 'none';
+    infoEl.style.display = 'none';
+    if (catSection) catSection.style.display = 'none';
+    categoriaSelezionata = '';
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+  }
+  checkConfermaIngresso();
+}
+
+// Chiudi dropdown cliccando fuori
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('conv-dropdown');
+  const search = document.getElementById('conv-search');
+  if (dd && search && !dd.contains(e.target) && e.target !== search) {
+    dd.style.display = 'none';
+  }
+});
 
 </script>
 
