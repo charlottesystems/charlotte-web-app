@@ -301,12 +301,47 @@
 
   <div class="conv-section" id="conv-section">
     <div class="manual-label">Convenzione hotel</div>
-    <div class="conv-grid">
-      <div class="conv-btn" onclick="selezionaConv(this,'NESSUNA')"><span class="conv-icon">🅿️</span>Nessuna</div>
-      <div class="conv-btn" onclick="selezionaConv(this,'HOTEL MEDICI')"><span class="conv-icon">🏨</span>Hotel Medici</div>
-      <div class="conv-btn" onclick="selezionaConv(this,'HOTEL BODONI')"><span class="conv-icon">🏨</span>Hotel Bodoni</div>
-      <div class="conv-btn" onclick="selezionaConv(this,'HOTEL JAMES')"><span class="conv-icon">🏨</span>Hotel James</div>
+    <div style="margin-top:8px;">
+      <select id="conv-select" onchange="selezionaConvSelect(this.value)" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:15px;outline:none;">
+        <option value="">-- Seleziona --</option>
+        <option value="NESSUNA">🅿️ Nessuna convenzione</option>
+        <optgroup label="Tariffe speciali">
+          <option value="HOTEL MEDICI">Hotel Medici (24€/40€)</option>
+          <option value="HOTEL BODONI">Hotel Bodoni (25€/35€)</option>
+          <option value="HOTEL JAMES">Hotel James (35€/45€)</option>
+          <option value="CASA MAGATA">Casa Magata (35€/45€)</option>
+          <option value="IMMOBILI LUXURY">Immobili Luxury (35€/45€)</option>
+        </optgroup>
+        <optgroup label="Tariffe standard (30€/40€/50€)">
+          <option value="MEDUSA">Medusa</option>
+          <option value="PIETRAPIANA BOUTIQUE">Pietrapiana Boutique Apartments</option>
+          <option value="MEGGY HOUSE">Meggy House</option>
+          <option value="BALOCCHINI">Balocchini</option>
+          <option value="PALAZZO GRAZIANI">Palazzo Graziani</option>
+          <option value="FIRENZE SUITES">Firenze Suites</option>
+          <option value="OBLATE">Oblate</option>
+          <option value="CASA ROVAI">Casa Rovai</option>
+          <option value="CASA MORFEO">Casa Morfeo</option>
+          <option value="MAMO FLORENCE">Mamo Florence</option>
+          <option value="EDEN">Eden</option>
+          <option value="FLORENCE ROOMS">Florence Rooms</option>
+          <option value="ANGELICA HOUSE">Angelica House</option>
+          <option value="KURSAAL">Kursaal</option>
+          <option value="CASA STELLA">Casa Stella</option>
+          <option value="PALAZZO CIOMPI">Palazzo Ciompi</option>
+          <option value="LUXURY FLORENCE">Luxury Florence</option>
+          <option value="PEPI MODERN">Pepi Modern</option>
+          <option value="DIMORA VECCHIA FIRENZE">Dimora Vecchia Firenze</option>
+          <option value="CASA VIGNALE">Casa Vignale</option>
+          <option value="BLU NOTTE">Blu Notte</option>
+          <option value="ANTICA DIMORA">Antica Dimora</option>
+          <option value="LOCANDA CIOMPI">Locanda Ciompi</option>
+          <option value="BAVARIA">Bavaria</option>
+          <option value="CANTO DEGLI ARANCI">Canto degli Aranci</option>
+        </optgroup>
+      </select>
     </div>
+    <div id="conv-info" style="margin-top:8px;font-size:12px;color:var(--green);display:none;font-family:'Share Tech Mono',monospace;"></div>
     <div id="cat-section" style="display:none; margin-top:10px;">
       <div class="manual-label" style="margin-bottom:6px;">Categoria</div>
       <div class="cat-row">
@@ -401,6 +436,33 @@
       <option value="HOTEL MEDICI">Hotel Medici</option>
       <option value="HOTEL BODONI">Hotel Bodoni</option>
       <option value="HOTEL JAMES">Hotel James</option>
+      <option value="CASA MAGATA">Casa Magata</option>
+      <option value="IMMOBILI LUXURY">Immobili Luxury</option>
+      <option value="MEDUSA">Medusa</option>
+      <option value="PIETRAPIANA BOUTIQUE">Pietrapiana Boutique</option>
+      <option value="MEGGY HOUSE">Meggy House</option>
+      <option value="BALOCCHINI">Balocchini</option>
+      <option value="PALAZZO GRAZIANI">Palazzo Graziani</option>
+      <option value="FIRENZE SUITES">Firenze Suites</option>
+      <option value="OBLATE">Oblate</option>
+      <option value="CASA ROVAI">Casa Rovai</option>
+      <option value="CASA MORFEO">Casa Morfeo</option>
+      <option value="MAMO FLORENCE">Mamo Florence</option>
+      <option value="EDEN">Eden</option>
+      <option value="FLORENCE ROOMS">Florence Rooms</option>
+      <option value="ANGELICA HOUSE">Angelica House</option>
+      <option value="KURSAAL">Kursaal</option>
+      <option value="CASA STELLA">Casa Stella</option>
+      <option value="PALAZZO CIOMPI">Palazzo Ciompi</option>
+      <option value="LUXURY FLORENCE">Luxury Florence</option>
+      <option value="PEPI MODERN">Pepi Modern</option>
+      <option value="DIMORA VECCHIA FIRENZE">Dimora Vecchia Firenze</option>
+      <option value="CASA VIGNALE">Casa Vignale</option>
+      <option value="BLU NOTTE">Blu Notte</option>
+      <option value="ANTICA DIMORA">Antica Dimora</option>
+      <option value="LOCANDA CIOMPI">Locanda Ciompi</option>
+      <option value="BAVARIA">Bavaria</option>
+      <option value="CANTO DEGLI ARANCI">Canto degli Aranci</option>
     </select>
     <select id="filter-stato" onchange="aggiornaReport()" style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:13px;outline:none;">
       <option value="">Tutte</option>
@@ -629,15 +691,18 @@ function confermaTargaManuale(mode) {
 // ─── TIPO VEICOLO ───
 function selezionaTipo(btn, tipo) {
   document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelectorAll('.conv-btn').forEach(b => b.classList.remove('selected'));
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
-  convSelezionata = 'NESSUNA'; categoriaSelezionata = '';
+  convSelezionata = ''; categoriaSelezionata = '';
   document.getElementById('cat-section').style.display = 'none';
+  const convSel = document.getElementById('conv-select');
+  if (convSel) convSel.value = '';
+  const infoEl = document.getElementById('conv-info');
+  if (infoEl) infoEl.style.display = 'none';
   btn.classList.add('selected'); tipoVeicoloSelezionato = tipo; checkConfermaIngresso();
 }
 function checkConfermaIngresso() {
-  const convOk = convSelezionata === 'NESSUNA' || (convSelezionata && (categoriaSelezionata || convSelezionata === 'NESSUNA'));
-  document.getElementById('btn-conferma-in').classList.toggle('enabled', targaCorrente.length >= 5 && !!tipoVeicoloSelezionato && !!convSelezionata);
+  const catOk = !convSelezionata || convSelezionata === 'NESSUNA' || !!categoriaSelezionata;
+  document.getElementById('btn-conferma-in').classList.toggle('enabled', targaCorrente.length >= 5 && !!tipoVeicoloSelezionato && !!convSelezionata && catOk);
 }
 
 // ─── INGRESSO ───
@@ -660,10 +725,13 @@ function resetIngresso() {
   document.getElementById('targa-display-in').classList.remove('has-targa');
   document.getElementById('manual-in').value='';
   document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelectorAll('.conv-btn').forEach(b => b.classList.remove('selected'));
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
-  convSelezionata = 'NESSUNA'; categoriaSelezionata = '';
+  convSelezionata = ''; categoriaSelezionata = '';
   document.getElementById('cat-section').style.display = 'none';
+  const convSel = document.getElementById('conv-select');
+  if (convSel) convSel.value = '';
+  const infoEl = document.getElementById('conv-info');
+  if (infoEl) infoEl.style.display = 'none';
   document.getElementById('btn-conferma-in').classList.remove('enabled');
 }
 
@@ -815,19 +883,36 @@ pinInit();
 let convSelezionata = 'NESSUNA';
 let categoriaSelezionata = '';
 
-function selezionaConv(btn, conv) {
-  document.querySelectorAll('.conv-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
+function selezionaConvSelect(conv) {
   convSelezionata = conv;
   const catSection = document.getElementById('cat-section');
-  if (conv !== 'NESSUNA') {
+  const infoEl = document.getElementById('conv-info');
+
+  // Tariffe info
+  const tariffe = {
+    'HOTEL MEDICI': '24€ piccole/medie · 40€ grandi/luxury',
+    'HOTEL BODONI': '25€ piccole/medie · 35€ grandi/luxury',
+    'HOTEL JAMES': '35€ piccole/medie · 45€ grandi/luxury',
+    'CASA MAGATA': '35€ piccole/medie · 45€ grandi/luxury',
+    'IMMOBILI LUXURY': '35€ piccole/medie · 45€ grandi/luxury',
+  };
+  const tariffeStandard = '30€ piccole/medie · 40€ grandi · 50€ van/luxury';
+
+  if (conv && conv !== 'NESSUNA') {
     catSection.style.display = 'block';
+    infoEl.style.display = 'block';
+    infoEl.textContent = '💶 ' + (tariffe[conv] || tariffeStandard);
   } else {
     catSection.style.display = 'none';
     categoriaSelezionata = '';
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+    infoEl.style.display = 'none';
   }
   checkConfermaIngresso();
+}
+
+function selezionaConv(btn, conv) {
+  selezionaConvSelect(conv);
 }
 
 function selezionaCat(btn, cat) {
