@@ -294,14 +294,11 @@
   </div>
 
   <div class="tipo-section">
-    <div class="manual-label">Tipo veicolo</div>
-    <div class="tipo-grid">
-      <div class="tipo-btn" onclick="selezionaTipo(this,'UTILITARIA')"><span class="tipo-icon">🚗</span>Utilitaria</div>
-      <div class="tipo-btn" onclick="selezionaTipo(this,'BERLINA')"><span class="tipo-icon">🚘</span>Berlina</div>
-      <div class="tipo-btn" onclick="selezionaTipo(this,'SUV')"><span class="tipo-icon">🚙</span>SUV</div>
-      <div class="tipo-btn" onclick="selezionaTipo(this,'VAN')"><span class="tipo-icon">🚐</span>Van</div>
-      <div class="tipo-btn" onclick="selezionaTipo(this,'MOTO')"><span class="tipo-icon">🏍️</span>Moto</div>
-      <div class="tipo-btn" onclick="selezionaTipo(this,'ALTRO')"><span class="tipo-icon">🚛</span>Altro</div>
+    <div class="manual-label">Dimensione veicolo</div>
+    <div class="tipo-grid" id="tipo-grid">
+      <div class="tipo-btn" onclick="selezionaTipo(this,'PICCOLA')"><span class="tipo-icon">🚗</span>Piccola</div>
+      <div class="tipo-btn" onclick="selezionaTipo(this,'MEDIA-GRANDE')"><span class="tipo-icon">🚙</span>Media/Grande</div>
+      <div class="tipo-btn" onclick="selezionaTipo(this,'LUXURY-VAN')"><span class="tipo-icon">🚐</span>Luxury/Van</div>
     </div>
   </div>
 
@@ -369,6 +366,7 @@
         <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--muted);margin-top:4px;">Tipo: <span id="out-tipo" style="color:var(--accent3)"></span></div>
         <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--muted);margin-top:4px;">Durata: <span id="out-durata" style="color:var(--green);font-weight:bold;"></span></div>
       </div>
+      <div id="out-prezzo" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
     </div>
   </div>
   <div id="sosta-non-trovata" style="display:none;margin-bottom:16px;">
@@ -738,8 +736,8 @@ function cercaSostaAttiva(targa) {
     const diffMins = Math.floor((now - inDate) / 60000);
     const ore = Math.floor(diffMins / 60); const minuti = diffMins % 60;
     document.getElementById('out-ingresso').textContent = sosta.ingresso;
-    document.getElementById('out-tipo').textContent = sosta.tipo;
-    document.getElementById('out-durata').textContent = `${ore}h ${minuti}m`;
+    document.getElementById('out-tipo').textContent = (sosta.tipo || '') + (sosta.convenzione && sosta.convenzione !== 'NESSUNA' ? ' · ' + sosta.convenzione : '') + (sosta.categoria ? ' · ' + sosta.categoria : '');
+    aggiornaPrezzoUscita(sosta, diffMins);
     document.getElementById('sosta-trovata').style.display='block';
     document.getElementById('btn-conferma-out').classList.add('enabled');
   } else {
@@ -1183,6 +1181,116 @@ document.addEventListener('click', function(e) {
     dd.style.display = 'none';
   }
 });
+
+
+// ─── TARIFFE FIESOLANA ───
+const TARIFFE = {
+  // [tariffa_oraria_piccola, tariffa_oraria_medigrande, tariffa_oraria_luxuryvan, giornaliero_piccola, giornaliero_medigrande]
+  'NESSUNA':              { ore: { 'PICCOLA': 7, 'MEDIA-GRANDE': 8, 'LUXURY-VAN': 10 }, giorno: { 'PICCOLA': null, 'MEDIA-GRANDE': null, 'LUXURY-VAN': null }, soloGiorno: false },
+  'HOTEL MEDICI':         { ore: null, giorno: { 'CAT-A': 24, 'CAT-B': 40 }, soloGiorno: true },
+  'HOTEL BODONI':         { ore: { 'CAT-A': 5, 'CAT-B': 7 }, giorno: { 'CAT-A': 25, 'CAT-B': 35 }, soloGiorno: false },
+  'HOTEL JAMES':          { ore: { 'CAT-A': 7, 'CAT-B': 10 }, giorno: { 'CAT-A': 35, 'CAT-B': 50 }, soloGiorno: false },
+  'CASA MAGATA':          { ore: { 'CAT-A': 7, 'CAT-B': 9 }, giorno: { 'CAT-A': 35, 'CAT-B': 45 }, soloGiorno: false },
+  'IMMOBILI LUXURY':      { ore: { 'CAT-A': 7, 'CAT-B': 9 }, giorno: { 'CAT-A': 35, 'CAT-B': 45 }, soloGiorno: false },
+  'MAMO FLORENCE':        { ore: { 'CAT-A': 6, 'CAT-B': 7 }, giorno: { 'CAT-A': 30, 'CAT-B': 35 }, soloGiorno: false },
+  // Tutte le altre standard (30€/40€/gg)
+  'DEFAULT_CONV':         { ore: { 'CAT-A': 6, 'CAT-B': 8 }, giorno: { 'CAT-A': 30, 'CAT-B': 40 }, soloGiorno: false },
+};
+
+const STRUTTURE_STANDARD = ['MEDUSA','PIETRAPIANA BOUTIQUE','MEGGY HOUSE','BALOCCHINI','PALAZZO GRAZIANI',
+  'FIRENZE SUITES','OBLATE','CASA ROVAI','CASA MORFEO','EDEN','FLORENCE ROOMS','ANGELICA HOUSE',
+  'KURSAAL','CASA STELLA','PALAZZO CIOMPI','LUXURY FLORENCE','PEPI MODERN','DIMORA VECCHIA FIRENZE',
+  'CASA VIGNALE','BLU NOTTE','ANTICA DIMORA','LOCANDA CIOMPI','BAVARIA','CANTO DEGLI ARANCI'];
+
+function calcolaPrezzo(convenzione, categoria, minutiTotali) {
+  const ore = minutiTotali / 60;
+  const giorni = minutiTotali / (60 * 24);
+
+  // Ottieni tariffa
+  let tariffa;
+  if (!convenzione || convenzione === 'NESSUNA') {
+    tariffa = TARIFFE['NESSUNA'];
+  } else if (TARIFFE[convenzione]) {
+    tariffa = TARIFFE[convenzione];
+  } else if (STRUTTURE_STANDARD.includes(convenzione)) {
+    tariffa = TARIFFE['DEFAULT_CONV'];
+  } else {
+    return null; // tariffa non disponibile
+  }
+
+  // Hotel Medici: solo giornaliero
+  if (tariffa.soloGiorno) {
+    const notti = Math.ceil(giorni);
+    const catKey = categoria || 'CAT-A';
+    const prezzoGiorno = tariffa.giorno[catKey] || 0;
+    return {
+      importo: notti * prezzoGiorno,
+      dettaglio: `${notti} notte/i × ${prezzoGiorno}€ = ${notti * prezzoGiorno}€`,
+      tipo: 'giornaliero'
+    };
+  }
+
+  // Determina chiave categoria
+  let catKey;
+  if (convenzione === 'NESSUNA' || !convenzione) {
+    catKey = categoria; // PICCOLA, MEDIA-GRANDE, LUXURY-VAN
+  } else {
+    catKey = categoria; // CAT-A, CAT-B
+  }
+
+  if (!catKey) return null;
+
+  // Logica: prime 4 ore → tariffa oraria, dopo → giornaliero
+  if (minutiTotali <= 240) {
+    // Meno di 4 ore → tariffa oraria
+    if (!tariffa.ore) return null;
+    const tarifOra = tariffa.ore[catKey];
+    if (!tarifOra) return null;
+    const oreArrotondate = Math.ceil(ore);
+    const importo = oreArrotondate * tarifOra;
+    return {
+      importo,
+      dettaglio: `${oreArrotondate} ora/e × ${tarifOra}€/h = ${importo}€`,
+      tipo: 'orario'
+    };
+  } else {
+    // Più di 4 ore → giornaliero (ogni 24h iniziate)
+    const prezzoGiorno = tariffa.giorno[catKey];
+    if (!prezzoGiorno) return null;
+    const notti = Math.ceil(giorni);
+    const importo = notti * prezzoGiorno;
+    return {
+      importo,
+      dettaglio: `${notti} notte/i × ${prezzoGiorno}€ = ${importo}€`,
+      tipo: 'giornaliero'
+    };
+  }
+}
+
+// ─── Aggiorna display durata+prezzo nella schermata uscita ───
+function aggiornaPrezzoUscita(sosta, minutiTotali) {
+  const ore = Math.floor(minutiTotali / 60);
+  const minuti = minutiTotali % 60;
+  document.getElementById('out-durata').textContent = `${ore}h ${minuti}m`;
+
+  const convenzione = sosta.convenzione || 'NESSUNA';
+  const categoria = sosta.categoria || sosta.tipo;
+  const risultato = calcolaPrezzo(convenzione, categoria, minutiTotali);
+
+  const prezzoEl = document.getElementById('out-prezzo');
+  if (risultato) {
+    prezzoEl.style.display = 'block';
+    prezzoEl.innerHTML = `
+      <div style="color:var(--green);font-size:18px;font-weight:bold;font-family:'Share Tech Mono',monospace;">
+        💶 ${risultato.importo}€
+      </div>
+      <div style="color:var(--muted);font-size:11px;margin-top:2px;">${risultato.dettaglio}</div>
+    `;
+  } else {
+    prezzoEl.style.display = 'block';
+    prezzoEl.innerHTML = '<div style="color:var(--amber);font-size:12px;">⚠️ Tariffa non disponibile — calcolo manuale</div>';
+  }
+}
 
 </script>
 
