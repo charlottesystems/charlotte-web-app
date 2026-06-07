@@ -416,14 +416,12 @@ function mostraLoadingDisplay(mode) {
 function estraiTarga(imageData, mode) {
   const blob = dataURLtoBlob(imageData);
   const fd = new FormData();
-  fd.append('upload', blob, 'targa.jpg');
-  fd.append('regions', 'it');
+  fd.append('image', blob, 'targa.jpg');
 
-  mostraDebug(mode, '📡 Chiamata API in corso...');
+  mostraDebug(mode, '📡 Chiamata proxy in corso...');
 
-  fetch('https://api.platerecognizer.com/v1/plate-reader/', {
+  fetch('https://charlotte-proxy.onrender.com/read-plate', {
     method: 'POST',
-    headers: { 'Authorization': 'Token a041edd34c6ee75252c23967c99b9cdec101c79f' },
     body: fd
   })
   .then(r => {
