@@ -813,12 +813,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ─── PIN ───
 const PIN_CORRETTO = '4422';
+const PIN_MASTER = 'Alfaromeo100%-';
 const PIN_SESSION_KEY = 'charlotte_auth';
 const PIN_TENTATIVI_KEY = 'charlotte_tentativi';
 const PIN_BLOCCO_KEY = 'charlotte_blocco';
 const MAX_TENTATIVI = 3;
 const BLOCCO_DURATA_MS = 60 * 60 * 1000; // 1 ora
 let pinInserito = '';
+let masterInserito = '';
+let modalitaMaster = false;
 
 function pinInit() {
   if (sessionStorage.getItem(PIN_SESSION_KEY) === 'ok') {
@@ -852,9 +855,12 @@ function aggiornaTentativiUI() {
 function mostraBloccato(bloccatoFino) {
   const screen = document.getElementById('pin-screen');
   screen.style.display = 'flex';
-  // Nasconde tastiera
   document.querySelector('.pin-grid').style.display = 'none';
   document.querySelector('.pin-dots').style.display = 'none';
+
+  // Mostra input master
+  const masterDiv = document.getElementById('master-unlock') || creMasterInput();
+  masterDiv.style.display = 'flex';
 
   const aggiorna = () => {
     const rimanente = bloccatoFino - Date.now();
@@ -869,6 +875,29 @@ function mostraBloccato(bloccatoFino) {
   };
   aggiorna();
   setInterval(aggiorna, 1000);
+}
+
+function creMasterInput() {
+  const div = document.createElement('div');
+  div.id = 'master-unlock';
+  div.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px;width:100%;max-width:280px;';
+  div.innerHTML = `
+    <div style="font-size:12px;color:var(--muted);letter-spacing:1px;">PASSWORD AMMINISTRATORE</div>
+    <input id="master-input" type="password" placeholder="Password master..."
+      style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:16px;outline:none;text-align:center;"
+      oninput="verificaMaster(this.value)">
+  `;
+  document.getElementById('pin-screen').appendChild(div);
+  return div;
+}
+
+function verificaMaster(val) {
+  if (val === PIN_MASTER) {
+    localStorage.removeItem(PIN_BLOCCO_KEY);
+    localStorage.removeItem(PIN_TENTATIVI_KEY);
+    sessionStorage.setItem(PIN_SESSION_KEY, 'ok');
+    document.getElementById('pin-screen').style.display = 'none';
+  }
 }
 
 function pinPress(cifra) {
