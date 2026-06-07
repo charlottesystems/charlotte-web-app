@@ -814,15 +814,61 @@ document.addEventListener('DOMContentLoaded', function() {
 // ─── PIN ───
 const PIN_CORRETTO = '4422';
 const PIN_SESSION_KEY = 'charlotte_auth';
+const PIN_TENTATIVI_KEY = 'charlotte_tentativi';
+const PIN_BLOCCO_KEY = 'charlotte_blocco';
+const MAX_TENTATIVI = 3;
+const BLOCCO_DURATA_MS = 60 * 60 * 1000; // 1 ora
 let pinInserito = '';
 
 function pinInit() {
-  // Controlla se già autenticato nella sessione
   if (sessionStorage.getItem(PIN_SESSION_KEY) === 'ok') {
     document.getElementById('pin-screen').style.display = 'none';
     return;
   }
+
+  // Controlla se dispositivo bloccato
+  const bloccatoFino = parseInt(localStorage.getItem(PIN_BLOCCO_KEY) || '0');
+  if (bloccatoFino > Date.now()) {
+    mostraBloccato(bloccatoFino);
+    return;
+  } else {
+    // Blocco scaduto, reset tentativi
+    localStorage.removeItem(PIN_BLOCCO_KEY);
+    localStorage.removeItem(PIN_TENTATIVI_KEY);
+  }
+
   document.getElementById('pin-screen').style.display = 'flex';
+  aggiornaTentativiUI();
+}
+
+function aggiornaTentativiUI() {
+  const tentativi = parseInt(localStorage.getItem(PIN_TENTATIVI_KEY) || '0');
+  const rimasti = MAX_TENTATIVI - tentativi;
+  if (tentativi > 0) {
+    document.getElementById('pin-error').textContent = `Tentativi rimasti: ${rimasti}`;
+  }
+}
+
+function mostraBloccato(bloccatoFino) {
+  const screen = document.getElementById('pin-screen');
+  screen.style.display = 'flex';
+  // Nasconde tastiera
+  document.querySelector('.pin-grid').style.display = 'none';
+  document.querySelector('.pin-dots').style.display = 'none';
+
+  const aggiorna = () => {
+    const rimanente = bloccatoFino - Date.now();
+    if (rimanente <= 0) {
+      location.reload();
+      return;
+    }
+    const minuti = Math.floor(rimanente / 60000);
+    const secondi = Math.floor((rimanente % 60000) / 1000);
+    document.getElementById('pin-error').textContent =
+      `🔒 Dispositivo bloccato — riprova tra ${minuti}m ${secondi}s`;
+  };
+  aggiorna();
+  setInterval(aggiorna, 1000);
 }
 
 function pinPress(cifra) {
@@ -836,7 +882,6 @@ function pinPress(cifra) {
 
 function pinCanc() {
   pinInserito = pinInserito.slice(0, -1);
-  document.getElementById('pin-error').textContent = '';
   aggiornaDots();
 }
 
@@ -850,24 +895,43 @@ function aggiornaDots() {
 
 function verificaPin() {
   if (pinInserito === PIN_CORRETTO) {
+    localStorage.removeItem(PIN_TENTATIVI_KEY);
+    localStorage.removeItem(PIN_BLOCCO_KEY);
     sessionStorage.setItem(PIN_SESSION_KEY, 'ok');
     document.getElementById('pin-screen').style.display = 'none';
   } else {
-    // Mostra errore
+    // Incrementa tentativi
+    let tentativi = parseInt(localStorage.getItem(PIN_TENTATIVI_KEY) || '0') + 1;
+    localStorage.setItem(PIN_TENTATIVI_KEY, tentativi);
+
     for (let i = 0; i < 4; i++) {
       const dot = document.getElementById('dot-' + i);
       dot.classList.remove('filled');
       dot.classList.add('error');
     }
-    document.getElementById('pin-error').textContent = 'PIN non corretto';
-    setTimeout(() => {
-      for (let i = 0; i < 4; i++) {
-        const dot = document.getElementById('dot-' + i);
-        dot.classList.remove('error');
-      }
-      document.getElementById('pin-error').textContent = '';
-      pinInserito = '';
-    }, 1000);
+
+    if (tentativi >= MAX_TENTATIVI) {
+      // Blocca dispositivo per 1 ora
+      const bloccatoFino = Date.now() + BLOCCO_DURATA_MS;
+      localStorage.setItem(PIN_BLOCCO_KEY, bloccatoFino);
+      // Invia email di segnalazione
+      fetch('https://charlotte-proxy.onrender.com/alert-blocco', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({timestamp: new Date().toISOString()})
+      }).catch(e => console.error('Alert email error:', e));
+      setTimeout(() => mostraBloccato(bloccatoFino), 800);
+    } else {
+      const rimasti = MAX_TENTATIVI - tentativi;
+      document.getElementById('pin-error').textContent =
+        `PIN non corretto — Tentativi rimasti: ${rimasti}`;
+      setTimeout(() => {
+        for (let i = 0; i < 4; i++) {
+          document.getElementById('dot-' + i).classList.remove('error');
+        }
+        pinInserito = '';
+      }, 1000);
+    }
   }
 }
 
