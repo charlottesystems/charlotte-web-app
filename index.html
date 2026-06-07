@@ -162,6 +162,31 @@
     .overlay-targa { font-size:52px; } .overlay-title { font-size:38px; } .overlay-sub { font-size:20px; }
     .ocr-input { font-size:52px; } .ocr-title { font-size:28px; }
   }
+
+  /* PIN SCREEN */
+  .pin-screen { position:fixed; inset:0; background:var(--bg); z-index:500; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:32px; }
+  .pin-logo { display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:10px; }
+  .pin-logo-icon { width:72px; height:72px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:36px; color:white; box-shadow:0 0 30px rgba(124,58,237,0.5); }
+  .pin-logo-text { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:28px; letter-spacing:2px; background:linear-gradient(90deg,var(--accent3),var(--white)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .pin-subtitle { font-size:13px; color:var(--muted); letter-spacing:1px; }
+  .pin-dots { display:flex; gap:14px; margin:8px 0; }
+  .pin-dot { width:18px; height:18px; border-radius:50%; border:2px solid var(--border); background:transparent; transition:all 0.2s; }
+  .pin-dot.filled { background:var(--accent2); border-color:var(--accent2); box-shadow:0 0 10px rgba(168,85,247,0.5); }
+  .pin-dot.error { background:var(--red); border-color:var(--red); }
+  .pin-error { font-size:13px; color:var(--red); min-height:18px; }
+  .pin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; width:100%; max-width:280px; }
+  .pin-btn { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:20px; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:26px; color:var(--white); cursor:pointer; text-align:center; transition:all 0.15s; user-select:none; }
+  .pin-btn:active { transform:scale(0.92); background:rgba(124,58,237,0.2); border-color:var(--accent); }
+  .pin-btn.zero { grid-column:2; }
+  .pin-btn.canc { background:transparent; border-color:transparent; color:var(--muted); font-size:20px; }
+  @media (min-width:600px) {
+    .pin-logo-icon { width:96px; height:96px; font-size:48px; }
+    .pin-logo-text { font-size:38px; }
+    .pin-dot { width:24px; height:24px; }
+    .pin-btn { font-size:36px; padding:26px; border-radius:20px; }
+    .pin-grid { max-width:360px; gap:16px; }
+  }
+
 </style>
 </head>
 <body>
@@ -414,21 +439,39 @@ function mostraLoadingDisplay(mode) {
 }
 
 function estraiTarga(imageData, mode) {
-  // Invia come base64 JSON — evita il blocco FormData su GitHub Pages
-  const base64 = imageData.split(',')[1];
-  const mimeType = imageData.split(';')[0].split(':')[1];
+  // Ridimensiona l'immagine prima di inviarla (max 800px, jpeg 0.8)
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    const MAX = 800;
+    let w = img.width, h = img.height;
+    if (w > MAX || h > MAX) {
+      if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+      else { w = Math.round(w * MAX / h); h = MAX; }
+    }
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    const ridotta = canvas.toDataURL('image/jpeg', 0.8);
+    inviaAlProxy(ridotta, mode);
+  };
+  img.src = imageData;
+}
 
+function inviaAlProxy(imageData, mode) {
+  const base64 = imageData.split(',')[1];
+  mostraDebug(mode, '📐 Dimensione: ' + Math.round(base64.length / 1024) + ' KB');
   mostraDebug(mode, '📡 Chiamata proxy in corso...');
+
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 30000);
 
   fetch('https://charlotte-proxy.onrender.com/read-plate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ image: base64, mime: mimeType })
+    body: JSON.stringify({ image: base64, mime: 'image/jpeg' }),
+    signal: controller.signal
   })
-  .then(r => {
-    mostraDebug(mode, '📥 HTTP status: ' + r.status);
-    return r.json();
-  })
+  .then(r => { clearTimeout(tid); mostraDebug(mode, '📥 HTTP status: ' + r.status); return r.json(); })
   .then(data => {
     mostraDebug(mode, '📋 Risposta: ' + JSON.stringify(data).substring(0, 200));
     resetDisplay(mode);
@@ -441,6 +484,7 @@ function estraiTarga(imageData, mode) {
     }
   })
   .catch(err => {
+    clearTimeout(tid);
     mostraDebug(mode, '❌ Errore: ' + err.message);
     resetDisplay(mode);
     apriOCROverlay('', 0, mode);
@@ -632,6 +676,99 @@ function parseDatetime(s) { const [dt,tm]=s.split(' '); const [dd,mo,yy]=dt.spli
 function dataURLtoBlob(d) { const a=d.split(','); const m=a[0].match(/:(.*?);/)[1]; const b=atob(a[1]); let n=b.length; const u=new Uint8Array(n); while(n--) u[n]=b.charCodeAt(n); return new Blob([u],{type:m}); }
 
 aggiornaStats();
+
+// ─── PIN ───
+const PIN_CORRETTO = '4422';
+const PIN_SESSION_KEY = 'charlotte_auth';
+let pinInserito = '';
+
+function pinInit() {
+  // Controlla se già autenticato nella sessione
+  if (sessionStorage.getItem(PIN_SESSION_KEY) === 'ok') {
+    document.getElementById('pin-screen').style.display = 'none';
+    return;
+  }
+  document.getElementById('pin-screen').style.display = 'flex';
+}
+
+function pinPress(cifra) {
+  if (pinInserito.length >= 4) return;
+  pinInserito += cifra;
+  aggiornaDots();
+  if (pinInserito.length === 4) {
+    setTimeout(verificaPin, 150);
+  }
+}
+
+function pinCanc() {
+  pinInserito = pinInserito.slice(0, -1);
+  document.getElementById('pin-error').textContent = '';
+  aggiornaDots();
+}
+
+function aggiornaDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.classList.toggle('filled', i < pinInserito.length);
+    dot.classList.remove('error');
+  }
+}
+
+function verificaPin() {
+  if (pinInserito === PIN_CORRETTO) {
+    sessionStorage.setItem(PIN_SESSION_KEY, 'ok');
+    document.getElementById('pin-screen').style.display = 'none';
+  } else {
+    // Mostra errore
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('dot-' + i);
+      dot.classList.remove('filled');
+      dot.classList.add('error');
+    }
+    document.getElementById('pin-error').textContent = 'PIN non corretto';
+    setTimeout(() => {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById('dot-' + i);
+        dot.classList.remove('error');
+      }
+      document.getElementById('pin-error').textContent = '';
+      pinInserito = '';
+    }, 1000);
+  }
+}
+
+pinInit();
+
 </script>
+
+<!-- ═══ PIN SCREEN ═══ -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-logo">
+    <div class="pin-logo-icon">C</div>
+    <div class="pin-logo-text">CHARLOTTE</div>
+    <div class="pin-subtitle">CITY PARKING — ACCESSO RISERVATO</div>
+  </div>
+  <div class="pin-dots" id="pin-dots">
+    <div class="pin-dot" id="dot-0"></div>
+    <div class="pin-dot" id="dot-1"></div>
+    <div class="pin-dot" id="dot-2"></div>
+    <div class="pin-dot" id="dot-3"></div>
+  </div>
+  <div class="pin-error" id="pin-error"></div>
+  <div class="pin-grid">
+    <div class="pin-btn" onclick="pinPress('1')">1</div>
+    <div class="pin-btn" onclick="pinPress('2')">2</div>
+    <div class="pin-btn" onclick="pinPress('3')">3</div>
+    <div class="pin-btn" onclick="pinPress('4')">4</div>
+    <div class="pin-btn" onclick="pinPress('5')">5</div>
+    <div class="pin-btn" onclick="pinPress('6')">6</div>
+    <div class="pin-btn" onclick="pinPress('7')">7</div>
+    <div class="pin-btn" onclick="pinPress('8')">8</div>
+    <div class="pin-btn" onclick="pinPress('9')">9</div>
+    <div class="pin-btn zero" onclick="pinPress('0')">0</div>
+    <div class="pin-btn canc" onclick="pinCanc()">⌫</div>
+  </div>
+</div>
+
 </body>
 </html>
